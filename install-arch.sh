@@ -66,7 +66,7 @@ vgcreate vg1 /dev/mapper/cryptlvm
 
 
 # Replace 'your_vg_name' with the actual name of your volume group
-VG_NAME="cryptlvm"
+VG_NAME="vg1"
 
 # Get the total size of the volume group in MB
 VG_SIZE_MB=$(vgdisplay --units M $VG_NAME | grep "VG Size" | awk '{print int($3)}')
