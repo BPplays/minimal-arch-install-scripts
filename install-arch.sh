@@ -61,11 +61,30 @@ pvcreate /dev/mapper/cryptlvm
 # create logical volume group on the physical volume
 vgcreate vg1 /dev/mapper/cryptlvm
 
-# create logical volume named root on the volume group with 40 GB of space
-lvcreate -L 40G vg1 -n root
+
+# Replace 'your_vg_name' with the actual name of your volume group
+VG_NAME="cryptlvm"
+
+# Get the total size of the volume group in MB
+VG_SIZE_MB=$(vgdisplay --units M $VG_NAME | grep "VG Size" | awk '{print int($3)}')
+
+# Calculate 1% of the VG size in MB
+PERCENT_SIZE_MB=$((VG_SIZE_MB / 100))
+
+# Define the minimum size in MiB (10GB)
+MIN_SIZE_MB=$((10 * 1000))
+
+# Use the larger of the calculated size and the minimum size
+LV_SIZE_MIB=$((PERCENT_SIZE_MB > MIN_SIZE_MIB ? PERCENT_SIZE_MB : MIN_SIZE_MB))
+
+# Create the logical volume with the calculated size
+lvcreate -L ${LV_SIZE_MB}M -nvar_log $VG_NAME
+lvcreate -L ${LV_SIZE_MB}M -n var_cache $VG_NAME
+lvcreate -L ${LV_SIZE_MB}M -n var_tmp $VG_NAME
+lvcreate -L ${LV_SIZE_MB}M -n tmp $VG_NAME
 
 # create logical volume named home on the volume group with the rest of the space
-lvcreate -l 100%FREE vg1 -n home
+lvcreate -l 95%FREE vg1 -n root
 
 # format root lv partition with ext4 filesystem
 mkfs.ext4 -m 1 /dev/vg1/root
