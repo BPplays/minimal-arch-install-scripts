@@ -22,9 +22,9 @@ read -r PARTITIONING
 echo -n "main partition size GB: "
 read -r arch_size_gb
 
-a10_power_9=1000000000
+giga___10_power_9=1000000000
 
-arch_size_b=$(expr $arch_size_gb \* $a10_power_9)
+arch_size_b=$(expr $arch_size_gb \* $giga___10_power_9)
 
 # if the user wants to create [one] LUKS partition manually with cfdisk (in case there are already other OS's installed)
 if [ "${PARTITIONING}" == "y" ]; then
