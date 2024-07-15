@@ -78,7 +78,7 @@ PERCENT_SIZE_MB=$((VG_SIZE_MB / 100))
 MIN_SIZE_MB=$((10 * 1000))
 
 # Use the larger of the calculated size and the minimum size
-LV_SIZE_MIB=$((PERCENT_SIZE_MB > MIN_SIZE_MIB ? PERCENT_SIZE_MB : MIN_SIZE_MB))
+LV_SIZE_MIB=$((PERCENT_SIZE_MB > MIN_SIZE_MB ? PERCENT_SIZE_MB : MIN_SIZE_MB))
 
 # Create the logical volume with the calculated size
 lvcreate -L ${LV_SIZE_MB}M -n var_log $VG_NAME
