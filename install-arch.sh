@@ -26,9 +26,6 @@ read -r arch_size_gb
 gb_to_gib=0.9313225746
 
 
-efi_size_GIB=0.9313225746
-
-efi_size_GIB_end=$(echo "$efi_size_GIB + 2048" | bc)
 
 arch_size_GIB=$(echo "$arch_size_gb * $gb_to_gib" | bc)
 
@@ -38,7 +35,7 @@ if [ "${PARTITIONING}" == "y" ]; then
     cfdisk "${BLOCK_DEVICE}"
 else
     # make a 550 MB EFI partition along with a $arch_size_b LUKS partition, leave the rest of the space unallocated
-    sgdisk --clear -n 1:0:+${efi_size_GIB}G -t 1:ef00 -n 2:0:+${arch_size_GIB}G -t 2:8e00 "${BLOCK_DEVICE}"
+    sgdisk --clear -n 1:0:+953m -t 1:ef00 -n 2:0:+${arch_size_GIB}G -t 2:8e00 "${BLOCK_DEVICE}"
 
     # format EFI partition
     mkfs.fat -F32 "${BLOCK_DEVICE}p1"
