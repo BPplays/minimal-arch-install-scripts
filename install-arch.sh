@@ -101,8 +101,10 @@ mount /dev/vg1/root /mnt
 # create home directory
 mkdir -p /mnt/home
 
+
 # create boot directory
 mkdir -p /mnt/boot
+
 
 # mount the EFI partiton
 mount "${BOOT_PARTITION}" /mnt/boot
@@ -153,7 +155,7 @@ EOF
 sed -i 's|#extra_kernel_version_strings|extra_kernel_version_strings|' /mnt/boot/EFI/refind/refind.conf
 sudo sed -i 's|#fold_linux_kernels|fold_linux_kernels|' /mnt/boot/EFI/refind/refind.conf
 
-# unmount partitions
-umount /mnt/home 
-umount /mnt/boot 
-umount /mnt
+# # unmount partitions
+# umount /mnt/home 
+# umount /mnt/boot 
+# umount /mnt
