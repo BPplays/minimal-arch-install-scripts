@@ -22,9 +22,15 @@ read -r PARTITIONING
 echo -n "main partition size GB: "
 read -r arch_size_gb
 
-giga___10_power_9=1000000000
+# giga___10_power_9=1000000000
+gb_to_gib=0.9313225746
 
-arch_size_b=$(expr $arch_size_gb \* $giga___10_power_9)
+
+efi_size_GIB=$(echo "1 * $gb_to_gib" | bc)
+
+efi_size_GIB_end=$(echo "$efi_size_GIB + 2048" | bc)
+
+arch_size_GIB=$(echo "$arch_size_gb * $gb_to_gib" | bc)
 
 # if the user wants to create [one] LUKS partition manually with cfdisk (in case there are already other OS's installed)
 if [ "${PARTITIONING}" == "y" ]; then
@@ -32,7 +38,7 @@ if [ "${PARTITIONING}" == "y" ]; then
     cfdisk "${BLOCK_DEVICE}"
 else
     # make a 550 MB EFI partition along with a $arch_size_b LUKS partition, leave the rest of the space unallocated
-    sgdisk --clear -n 1:0:+1000000000 -t 1:ef00 -n 2:1000002048:+${arch_size_b} -t 2:8e00 "${BLOCK_DEVICE}"
+    sgdisk --clear -n 1:0:+${efi_size_GIB}G -t 1:ef00 -n 2:0:+${arch_size_GIB}G -t 2:8e00 "${BLOCK_DEVICE}"
 
     # format EFI partition
     mkfs.fat -F32 "${BLOCK_DEVICE}p1"
