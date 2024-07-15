@@ -68,23 +68,26 @@ vgcreate vg1 /dev/mapper/cryptlvm
 # Replace 'your_vg_name' with the actual name of your volume group
 VG_NAME="vg1"
 
-# Get the total size of the volume group in MB
-VG_SIZE_MB=$(vgdisplay --units M $VG_NAME | grep "VG Size" | awk '{print int($3)}')
+# Get the total size of the volume group in bytes
+total_size_bytes=$(vgs --noheadings --nosuffix --units B -o vg_size $VG_NAME | tr -d ' ')
 
-# Calculate 1% of the VG size in MB
-PERCENT_SIZE_MB=$((VG_SIZE_MB / 100))
+# Calculate 2% of the total size in bytes
+size_2_percent_bytes=$((total_size_bytes * 2 / 100))
 
-# Define the minimum size in MiB (10GB)
-MIN_SIZE_MB=$((10 * 1000))
+# Convert 5GB to bytes (1 GB = 1,000,000,000 bytes)
+min_size_bytes=$((5 * 1000000000))
 
-# Use the larger of the calculated size and the minimum size
-LV_SIZE_MIB=$((PERCENT_SIZE_MB > MIN_SIZE_MB ? PERCENT_SIZE_MB : MIN_SIZE_MB))
+# Determine the size to use (max of 2% of total size or 5GB)
+lv_size_bytes=$((size_2_percent_bytes > min_size_bytes ? size_2_percent_bytes : min_size_bytes))
+
+# Convert the size to MB (LVM command requires sizes in MB)
+lv_size_mb=$((lv_size_bytes / 1000000))
 
 # Create the logical volume with the calculated size
-lvcreate -L ${LV_SIZE_MB}M -n var_log $VG_NAME
-lvcreate -L ${LV_SIZE_MB}M -n var_cache $VG_NAME
-lvcreate -L ${LV_SIZE_MB}M -n var_tmp $VG_NAME
-lvcreate -L ${LV_SIZE_MB}M -n tmp $VG_NAME
+lvcreate -L ${lv_size_mb}M -n var_log $VG_NAME
+lvcreate -L ${lv_size_mb}M -n var_cache $VG_NAME
+lvcreate -L ${lv_size_mb}M -n var_tmp $VG_NAME
+lvcreate -L ${lv_size_mb}M -n tmp $VG_NAME
 
 # create logical volume named home on the volume group with the rest of the space
 lvcreate -l 90%FREE vg1 -n root
