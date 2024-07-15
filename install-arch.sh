@@ -78,28 +78,28 @@ MIN_SIZE_MB=$((10 * 1000))
 LV_SIZE_MIB=$((PERCENT_SIZE_MB > MIN_SIZE_MIB ? PERCENT_SIZE_MB : MIN_SIZE_MB))
 
 # Create the logical volume with the calculated size
-lvcreate -L ${LV_SIZE_MB}M -nvar_log $VG_NAME
+lvcreate -L ${LV_SIZE_MB}M -n var_log $VG_NAME
 lvcreate -L ${LV_SIZE_MB}M -n var_cache $VG_NAME
 lvcreate -L ${LV_SIZE_MB}M -n var_tmp $VG_NAME
 lvcreate -L ${LV_SIZE_MB}M -n tmp $VG_NAME
 
 # create logical volume named home on the volume group with the rest of the space
-lvcreate -l 95%FREE vg1 -n root
+lvcreate -l 90%FREE vg1 -n root
 
-# format root lv partition with ext4 filesystem
-mkfs.ext4 -m 1 /dev/vg1/root
 
-# format home lv partition with ext4 filesystem
-mkfs.ext4 -m 1 /dev/vg1/home
+mkfs.btrfs /dev/vg1/root
+mkfs.btrfs /dev/vg1/var_log
+mkfs.btrfs /dev/vg1/var_cache
+mkfs.btrfs /dev/vg1/var_tmp
+
+mkfs.ext4 -m 2 /dev/vg1/tmp
+tune2fs -O ^has_journal /dev/vg1/tmp
 
 # mount the root partition
 mount /dev/vg1/root /mnt
 
 # create home directory
 mkdir -p /mnt/home
-
-# mount the home partition
-mount /dev/vg1/home /mnt/home
 
 # create boot directory
 mkdir -p /mnt/boot
