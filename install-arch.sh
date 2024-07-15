@@ -26,7 +26,7 @@ read -r arch_size_gb
 gb_to_gib=0.9313225746
 
 
-efi_size_GIB=$(echo "1 * $gb_to_gib" | bc)
+efi_size_GIB=0.9313225746
 
 efi_size_GIB_end=$(echo "$efi_size_GIB + 2048" | bc)
 
