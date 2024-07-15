@@ -19,13 +19,20 @@ read -r BLOCK_DEVICE
 echo -n "Do you want to do partitioning manually with cfdisk? [y/N]: "
 read -r PARTITIONING
 
+echo -n "main partition size GB: "
+read -r arch_size_gb
+
+a10_power_9=1000000000
+
+arch_size_b=$(expr $arch_size_gb \* $a10_power_9)
+
 # if the user wants to create [one] LUKS partition manually with cfdisk (in case there are already other OS's installed)
 if [ "${PARTITIONING}" == "y" ]; then
     # partition the block device with cfdisk
     cfdisk "${BLOCK_DEVICE}"
 else
-    # make a 550 MB EFI partition along with a 170GB LUKS partition, leave the rest of the space unallocated
-    sgdisk --clear -n 1:0:+550M -t 1:ef00 -n 2:0:+170G -t 2:8e00 "${BLOCK_DEVICE}"
+    # make a 550 MB EFI partition along with a $arch_size_b LUKS partition, leave the rest of the space unallocated
+    sgdisk --clear -n 1:0:+1000000000 -t 1:ef00 -n "2:0:+${arch_size_b}" -t 2:8e00 "${BLOCK_DEVICE}"
 
     # format EFI partition
     mkfs.fat -F32 "${BLOCK_DEVICE}p1"
