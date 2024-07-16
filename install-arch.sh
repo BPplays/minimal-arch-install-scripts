@@ -39,6 +39,7 @@ else
 
     # format EFI partition
     mkfs.fat -F32 "${BLOCK_DEVICE}p1"
+    mkfs.ext4 -m 2 "${BLOCK_DEVICE}p2"
 fi
 
 # show partitions
