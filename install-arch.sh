@@ -35,7 +35,7 @@ if [ "${PARTITIONING}" == "y" ]; then
     cfdisk "${BLOCK_DEVICE}"
 else
     # make a 550 MB EFI partition along with a $arch_size_b LUKS partition, leave the rest of the space unallocated
-    sgdisk --clear -n 1:2048:+512M -t 1:EF00 -c 1:"EFI System" -n 2:0:+512M -t 2:8300 -c 2:"Boot" -n 3:0:+${arch_size_GIB}G -t 3:8e00 "${BLOCK_DEVICE}"
+    sgdisk --clear -n 1:2048:+1907M -t 1:EF00 -c 1:"EFI System" -n 2:0:+1907M -t 2:8300 -c 2:"Boot" -n 3:0:+${arch_size_GIB}G -t 3:8e00 "${BLOCK_DEVICE}"
 
     # format EFI partition
     mkfs.fat -F32 "${BLOCK_DEVICE}p1"
@@ -127,11 +127,13 @@ mkdir -p /mnt/home
 # create boot directory
 mkdir -p /mnt/boot/efi
 
+mount "${BOOT_PARTITION}" /mnt/boot
 
+mkdir -p /mnt/boot/efi
 
 # mount the EFI partiton
 mount "${EFI_PARTITION}" /mnt/boot/efi
-mount "${BOOT_PARTITION}" /mnt/boot
+
 
 # show the mounted partitions
 lsblk
