@@ -2,7 +2,8 @@
 
 set -euo pipefail
 
-mount -a 
+mount -a
+pacman -Syu lvm2
 
 # set settings related to locale
 sed -i -e 's|#ja_JP UTF-8|ja_JP UTF-8|' -e 's|#en_US.UTF-8 UTF-8|en_US.UTF-8 UTF-8|' /etc/locale.gen
@@ -30,7 +31,7 @@ EOF
 # set root user password
 passwd
 
-pacman -S lvm2
+
 
 # configure mkinitcpio
 sed -i '/^HOOKS/s/\(block \)\(.*filesystems\)/\1encrypt lvm2 \2/' /etc/mkinitcpio.conf
@@ -44,6 +45,7 @@ echo "mkinitcpio -p linux-lts"
 
 # install and configure refind
 refind-install
+echo "refind installed"
 
 # enable NetworkManager systemd service
 systemctl enable NetworkManager
