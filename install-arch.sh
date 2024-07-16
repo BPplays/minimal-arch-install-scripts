@@ -124,7 +124,7 @@ mkdir -p /mnt/home
 
 
 # create boot directory
-mkdir -p /mnt/boot
+mkdir -p /mnt/boot/efi
 
 
 
