@@ -104,6 +104,12 @@ tune2fs -O ^has_journal /dev/vg1/tmp
 # mount the root partition
 mount /dev/vg1/root /mnt
 
+mount /dev/vg1/var_log /mnt/var/log
+mount /dev/vg1/var_cache /mnt/var/cache
+mount /dev/vg1/tmp /mnt/tmp
+mount /dev/vg1/var_tmp /mnt/var/tmp
+
+echo "mounted all dirs"
 # create home directory
 mkdir -p /mnt/home
 
@@ -134,17 +140,28 @@ When=PostTransaction
 Exec=/usr/bin/refind-install
 EOF
 
+
+echo "refind-install hook"
+
 # Generate an fstab config
 genfstab -U /mnt >>/mnt/etc/fstab
+
+echo "genfstab"
 
 # copy chroot-script.sh to /mnt
 cp chroot-script.sh /mnt
 
+echo "cp chroot-script.sh /mnt"
+
 # chroot into the new system and run the chroot-script.sh script
 arch-chroot /mnt ./chroot-script.sh
 
+echo "arch-chroot /mnt ./chroot-script.sh"
+
 # get the UUID of the LUKS partition
 LUKS_UUID=$(blkid -s UUID -o value "${NEW_PARTITION}")
+
+echo "luks uuid $LUKS_UUID"
 
 # prepare boot options for refind
 BLK_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:cryptlvm root=/dev/vg1/root"
@@ -158,8 +175,12 @@ cat <<EOF >/mnt/boot/refind_linux.conf
 "Boot to single-user mode"       "${BLK_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} single"
 "Boot with minimal options"      "${BLK_OPTIONS} ${INITRD_OPTIONS} ro"
 EOF
+
+echo "cat /mnt/boot/refind_linux.conf"
 sed -i 's|#extra_kernel_version_strings|extra_kernel_version_strings|' /mnt/boot/EFI/refind/refind.conf
 sudo sed -i 's|#fold_linux_kernels|fold_linux_kernels|' /mnt/boot/EFI/refind/refind.conf
+
+echo "sed refind stuff"
 
 # # unmount partitions
 # umount /mnt/home 
