@@ -97,10 +97,10 @@ lvcreate -L ${lv_size_mb}M -n tmp $VG_NAME
 lvcreate -l 90%FREE vg1 -n root
 
 
-mkfs.btrfs /dev/vg1/root
-mkfs.btrfs /dev/vg1/var_log
-mkfs.btrfs /dev/vg1/var_cache
-mkfs.btrfs /dev/vg1/var_tmp
+mkfs.btrfs --csum sha256 /dev/vg1/root
+mkfs.btrfs --csum sha256 /dev/vg1/var_log
+mkfs.btrfs --csum sha256 /dev/vg1/var_cache
+mkfs.btrfs --csum sha256 /dev/vg1/var_tmp
 
 mkfs.ext4 -m 2 /dev/vg1/tmp
 tune2fs -O ^has_journal /dev/vg1/tmp
