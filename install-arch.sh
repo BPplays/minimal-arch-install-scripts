@@ -104,6 +104,12 @@ tune2fs -O ^has_journal /dev/vg1/tmp
 # mount the root partition
 mount /dev/vg1/root /mnt
 
+
+mkdir -p /mnt/var/log
+mkdir -p /mnt/var/cache
+mkdir -p /mnt/tmp
+mkdir -p /mnt/var/tmp
+
 mount /dev/vg1/var_log /mnt/var/log
 mount /dev/vg1/var_cache /mnt/var/cache
 mount /dev/vg1/tmp /mnt/tmp
