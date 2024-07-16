@@ -28,13 +28,16 @@ EOF
 # set root user password
 passwd
 
+pacman -S lvm2
+
 # configure mkinitcpio
 sed -i '/^HOOKS/s/\(block \)\(.*filesystems\)/\1encrypt lvm2 \2/' /etc/mkinitcpio.conf
 
 # generate initramfs for linux and linux-lts
-mkinitcpio -p linux
+# mkinitcpio -P
+mkinitcpio -p linux -v
 echo "mkinitcpio -p linux"
-mkinitcpio -p linux-lts
+mkinitcpio -p linux-lts -v
 echo "mkinitcpio -p linux-lts"
 
 # install and configure refind
