@@ -139,7 +139,7 @@ mount "${EFI_PARTITION}" /mnt/boot/efi
 lsblk
 
 # install necessary packages
-pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd intel-ucode
+pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode
 
 # refind-install hook
 cat <<EOF >/etc/pacman.d/hooks/refind.hook
