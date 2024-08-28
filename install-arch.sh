@@ -149,8 +149,8 @@ echo "pc u ml"
 
 echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /etc/pacman.conf
 
-pacman -Syy  --noconfirm crudini
-crudini --set /etc/pacman.conf options ParallelDownloads 128
+pacman -Syy  --noconfirm crudini dos2unix
+crudini --set /etc/pacman.conf options ParallelDownloads 256
 # crudini --set /mnt/etc/pacman.conf options ParallelDownloads 32
 
 pacman -Syy --noconfirm archlinux-keyring
@@ -189,6 +189,7 @@ cp chroot-script.sh /mnt
 
 cp mkinitcpio.conf mkinitcpio.conf_cp
 mv -f mkinitcpio.conf_cp /mnt/etc/mkinitcpio.conf
+dos2unix /mnt/etc/mkinitcpio.conf
 
 echo "cp chroot-script.sh /mnt"
 
