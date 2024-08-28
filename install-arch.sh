@@ -37,7 +37,7 @@ else
     sgdisk --clear \
       -n 1:2048:+1907M -t 1:EF00 -c 1:"EFI System" \
       -n 2:0:+1907M -t 2:8300 -c 2:"Boot" \
-      -n 3:0:+${arch_size_GIB}G -t 3:8e00 -c 3:"arch" \
+      -n 3:0:+${arch_size_GIB}G -t 3:8e00 -c 3:"Arch Linux" \
       "${BLOCK_DEVICE}"
 
     # format EFI partition
