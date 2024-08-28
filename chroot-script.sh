@@ -50,7 +50,9 @@ passwd
 
 
 # generate initramfs for linux and linux-lts
+set +euo pipefail
 mkinitcpio -P
+set -euo pipefail
 # mkinitcpio -p linux -v
 # echo "mkinitcpio -p linux"
 # mkinitcpio -p linux-lts -v
