@@ -18,6 +18,7 @@ pacman -Syyu  --noconfirm lvm2
 
 set +euo pipefail
 pacman -Syyu  --noconfirm freeipa-client freeipa-client-common freeipa-common dos2unix
+pacman -Syyu  --noconfirm sudo
 set -euo pipefail
 
 # set settings related to locale
