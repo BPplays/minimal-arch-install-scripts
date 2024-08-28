@@ -35,7 +35,7 @@ passwd
 
 
 # configure mkinitcpio
-sed -i '/^HOOKS/s/\(block \)\(.*filesystems\)/\1encrypt lvm2 \2/' /etc/mkinitcpio.conf
+# sed -i '/^HOOKS/s/\(block \)\(.*filesystems\)/\1encrypt lvm2 \2/' /etc/mkinitcpio.conf
 
 # generate initramfs for linux and linux-lts
 # mkinitcpio -P

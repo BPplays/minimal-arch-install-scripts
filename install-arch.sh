@@ -174,6 +174,9 @@ cat /mnt/etc/fstab
 # copy chroot-script.sh to /mnt
 cp chroot-script.sh /mnt
 
+cp mkinitcpio.conf mkinitcpio.conf_cp
+mv -f mkinitcpio.conf_cp /mnt/etc/mkinitcpio.conf
+
 echo "cp chroot-script.sh /mnt"
 
 # chroot into the new system and run the chroot-script.sh script
