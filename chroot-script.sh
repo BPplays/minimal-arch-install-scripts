@@ -14,7 +14,11 @@ echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /
 pacman -Syyu  --noconfirm crudini
 
 crudini --set /etc/pacman.conf options ParallelDownloads 256
-pacman -Syyu  --noconfirm lvm2 freeipa-client freeipa-client-common freeipa-common dos2unix
+pacman -Syyu  --noconfirm lvm2
+
+set +euo pipefail
+pacman -Syyu  --noconfirm freeipa-client freeipa-client-common freeipa-common dos2unix
+set -euo pipefail
 
 # set settings related to locale
 sed -i -e 's|#ja_JP UTF-8|ja_JP UTF-8|' -e 's|#en_US.UTF-8 UTF-8|en_US.UTF-8 UTF-8|' /etc/locale.gen

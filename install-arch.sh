@@ -217,8 +217,8 @@ cat <<EOF >/mnt/boot/refind_linux.conf
 EOF
 
 echo "cat /mnt/boot/refind_linux.conf"
-sed -i 's|#extra_kernel_version_strings|extra_kernel_version_strings|' /mnt/boot/EFI/refind/refind.conf
-sudo sed -i 's|#fold_linux_kernels|fold_linux_kernels|' /mnt/boot/EFI/refind/refind.conf
+sed -i 's|#extra_kernel_version_strings|extra_kernel_version_strings|' /mnt/boot/efi/EFI/refind/refind.conf
+sudo sed -i 's|#fold_linux_kernels|fold_linux_kernels|' /mnt/boot/efi/EFI/refind/refind.conf
 
 echo "sed refind stuff"
 
