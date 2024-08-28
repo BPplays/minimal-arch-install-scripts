@@ -55,12 +55,12 @@ passwd
 
 # generate initramfs for linux and linux-lts
 set +euo pipefail
-mkinitcpio -P
+# mkinitcpio -P
+mkinitcpio -p linux
+echo "mkinitcpio -p linux"
+mkinitcpio -p linux-lts
+echo "mkinitcpio -p linux-lts"
 set -euo pipefail
-# mkinitcpio -p linux -v
-# echo "mkinitcpio -p linux"
-# mkinitcpio -p linux-lts -v
-# echo "mkinitcpio -p linux-lts"
 
 # install and configure refind
 refind-install
