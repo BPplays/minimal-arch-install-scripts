@@ -13,7 +13,7 @@ echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /
 
 pacman -Syyu  --noconfirm crudini
 
-crudini --set /etc/pacman.conf options ParallelDownloads 128
+crudini --set /etc/pacman.conf options ParallelDownloads 256
 pacman -Syyu  --noconfirm lvm2 freeipa-client freeipa-client-common freeipa-common
 
 # set settings related to locale
