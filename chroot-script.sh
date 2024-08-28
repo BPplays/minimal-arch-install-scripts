@@ -3,6 +3,7 @@
 set -euo pipefail
 
 mount -a
+pacman -Syu --noconfirm
 
 pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 pacman-key --lsign-key 3056513887B78AEB
@@ -11,14 +12,14 @@ pacman -U  --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirror
 
 echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /etc/pacman.conf
 
-pacman -Syyu  --noconfirm crudini
+pacman -Syu  --noconfirm crudini
 
 crudini --set /etc/pacman.conf options ParallelDownloads 256
-pacman -Syyu  --noconfirm lvm2
+pacman -Syu  --noconfirm lvm2
 
 set +euo pipefail
-pacman -Syyu  --noconfirm freeipa-client freeipa-client-common freeipa-common dos2unix
-pacman -Syyu  --noconfirm sudo
+pacman -Syu  --noconfirm freeipa-client freeipa-client-common freeipa-common dos2unix
+pacman -Syu  --noconfirm sudo
 set -euo pipefail
 
 # set settings related to locale
