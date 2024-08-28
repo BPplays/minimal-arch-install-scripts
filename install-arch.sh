@@ -145,6 +145,10 @@ pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.
 
 echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /etc/pacman.conf
 
+pacman -Sy crudini
+crudini --set /etc/pacman.conf options ParallelDownloads 32
+crudini --set /mnt/etc/pacman.conf options ParallelDownloads 32
+
 # install necessary packages
 pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode crudini freeipa-client freeipa-client-common freeipa-common cryptsetup
 
