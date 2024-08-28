@@ -142,18 +142,18 @@ pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 echo "pc recv"
 pacman-key --lsign-key 3056513887B78AEB
 echo "pc lsi"
-pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+pacman -U  --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
 echo "pc u kr"
-pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+pacman -U  --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 echo "pc u ml"
 
 echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /etc/pacman.conf
 
-pacman -Syy crudini
+pacman -Syy  --noconfirm crudini
 crudini --set /etc/pacman.conf options ParallelDownloads 128
 # crudini --set /mnt/etc/pacman.conf options ParallelDownloads 32
 
-pacman -Syy archlinux-keyring
+pacman -Syy --noconfirm archlinux-keyring
 # pacman-key --refresh-keys
 # pacman-key --populate archlinux
 
