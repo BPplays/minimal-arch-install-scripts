@@ -11,10 +11,10 @@ pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.
 
 echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /etc/pacman.conf
 
-pacman -Syyu crudini
+pacman -Syyu  --noconfirm crudini
 
 crudini --set /etc/pacman.conf options ParallelDownloads 128
-pacman -Syyu lvm2 freeipa-client freeipa-client-common freeipa-common
+pacman -Syyu  --noconfirm lvm2 freeipa-client freeipa-client-common freeipa-common
 
 # set settings related to locale
 sed -i -e 's|#ja_JP UTF-8|ja_JP UTF-8|' -e 's|#en_US.UTF-8 UTF-8|en_US.UTF-8 UTF-8|' /etc/locale.gen
