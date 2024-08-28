@@ -59,8 +59,8 @@ set +euo pipefail
 # mkinitcpio -P
 mkinitcpio -p linux
 echo "mkinitcpio -p linux"
-mkinitcpio -p linux-lts
-echo "mkinitcpio -p linux-lts"
+# mkinitcpio -p linux-lts
+# echo "mkinitcpio -p linux-lts"
 set -euo pipefail
 
 # install and configure refind
