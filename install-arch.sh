@@ -138,10 +138,10 @@ mount "${EFI_PARTITION}" /mnt/boot/efi
 # show the mounted partitions
 lsblk
 
-pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com --allow-weak-key-signatures
-pacman-key --lsign-key 3056513887B78AEB --allow-weak-key-signatures
-pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' --allow-weak-key-signatures
-pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst' --allow-weak-key-signatures
+pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+pacman-key --lsign-key 3056513887B78AEB
+pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 
 echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /etc/pacman.conf
 
@@ -155,7 +155,7 @@ pacman-key --populate archlinux
 
 
 # install necessary packages
-pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode crudini freeipa-client freeipa-client-common freeipa-common cryptsetup
+pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode crudini cryptsetup
 
 # refind-install hook
 cat <<EOF >/etc/pacman.d/hooks/refind.hook
