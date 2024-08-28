@@ -222,7 +222,8 @@ EOF
 echo "cat /mnt/boot/refind_linux.conf"
 cat /mnt/boot/refind_linux.conf
 echo ""
-sed -i 's|#extra_kernel_version_strings|extra_kernel_version_strings|' /mnt/boot/efi/EFI/refind/refind.conf
+# sed -i 's|#extra_kernel_version_strings|extra_kernel_version_strings|' /mnt/boot/efi/EFI/refind/refind.conf
+echo 'extra_kernel_version_strings "linux-hardened,linux-rt-lts,linux-zen,linux-lts,linux-rt,linux"' | sudo tee -a /mnt/boot/efi/EFI/refind/refind.conf
 sudo sed -i 's|#fold_linux_kernels|fold_linux_kernels|' /mnt/boot/efi/EFI/refind/refind.conf
 
 echo "sed refind stuff"
