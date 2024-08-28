@@ -3,7 +3,7 @@
 set -euo pipefail
 
 echo "#################### Add New User ####################"
-echo -n "Enter new user name: " 
+echo -n "Enter new user name: "
 read -r NEW_USER
 useradd -m -g wheel ${NEW_USER}
 passwd ${NEW_USER}
@@ -21,8 +21,10 @@ grep "^ParallelDownloads" /etc/pacman.conf >/dev/null || sed -i "s/^#ParallelDow
 sed -i "s/-j2/-j$(nproc)/;s/^#MAKEFLAGS/MAKEFLAGS/" /etc/makepkg.conf
 
 echo "#################### Create Swap File ####################"
-dd if=/dev/zero of=/swapfile bs=1M count=2048 status=progress
-chmod 600 /swapfile
-mkswap /swapfile
-swapon /swapfile
-echo '/swapfile none swap defaults 0 0' | tee -a /etc/fstab
+mkdir -p "/opt/swap/"
+chown -R root:root "/opt/swap/"
+dd if=/dev/zero of=/opt/swap/swap1 bs=1M count=2048 status=progress
+chmod 600 /opt/swap/swap1
+mkswap /opt/swap/swap1
+swapon /opt/swap/swap1
+echo '/opt/swap/swap1 none swap defaults 0 0' | tee -a /etc/fstab

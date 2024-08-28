@@ -23,8 +23,9 @@ echo "${HOSTNAME}" >/etc/hostname
 
 # configure hosts file
 cat <<EOF >>/etc/hosts
-127.0.0.1    localhost
 ::1          localhost
+::1          ${HOSTNAME}
+127.0.0.1    localhost
 127.0.1.1    ${HOSTNAME}
 EOF
 

@@ -138,8 +138,15 @@ mount "${EFI_PARTITION}" /mnt/boot/efi
 # show the mounted partitions
 lsblk
 
+pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+pacman-key --lsign-key 3056513887B78AEB
+pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+
+echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /etc/pacman.conf
+
 # install necessary packages
-pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode
+pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode crudini freeipa cryptsetup
 
 # refind-install hook
 cat <<EOF >/etc/pacman.d/hooks/refind.hook
@@ -158,9 +165,11 @@ EOF
 echo "refind-install hook"
 
 # Generate an fstab config
-genfstab -U /mnt >>/mnt/etc/fstab
+genfstab -U /mnt > /mnt/etc/fstab
 
 echo "genfstab"
+
+cat /mnt/etc/fstab
 
 # copy chroot-script.sh to /mnt
 cp chroot-script.sh /mnt
@@ -197,6 +206,6 @@ sudo sed -i 's|#fold_linux_kernels|fold_linux_kernels|' /mnt/boot/EFI/refind/ref
 echo "sed refind stuff"
 
 # # unmount partitions
-# umount /mnt/home 
-# umount /mnt/boot 
+# umount /mnt/home
+# umount /mnt/boot
 # umount /mnt
