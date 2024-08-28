@@ -3,7 +3,9 @@
 set -euo pipefail
 
 mount -a
-pacman -Syu lvm2
+
+crudini --set /etc/pacman.conf options ParallelDownloads 128
+pacman -Syu lvm2 freeipa-client freeipa-client-common freeipa-common
 
 # set settings related to locale
 sed -i -e 's|#ja_JP UTF-8|ja_JP UTF-8|' -e 's|#en_US.UTF-8 UTF-8|en_US.UTF-8 UTF-8|' /etc/locale.gen
