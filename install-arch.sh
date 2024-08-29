@@ -25,6 +25,13 @@ read -r arch_size_gb
 # giga___10_power_9=1000000000
 gb_to_gib=0.9313225746
 
+echo -n "Enter Time Zone: "
+read -r TIME_ZONE_t
+export TIME_ZONE="$TIME_ZONE_t"
+
+echo -n "Enter hostname: "
+read -r HOSTNAME_t
+export HOSTNAME="$HOSTNAME_t"
 
 
 arch_size_GIB=$(echo "$arch_size_gb * $gb_to_gib" | bc)
