@@ -15,7 +15,6 @@ echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /
 pacman -Syu  --noconfirm crudini
 
 crudini --set /etc/pacman.conf options ParallelDownloads 256
-pacman -Syu  --noconfirm lvm2
 
 set +euo pipefail
 pacman -Syu  --noconfirm freeipa-client freeipa-client-common freeipa-common dos2unix
