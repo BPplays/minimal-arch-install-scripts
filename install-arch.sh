@@ -35,8 +35,8 @@ if [ "${PARTITIONING}" == "y" ]; then
     cfdisk "${BLOCK_DEVICE}"
 else
     sgdisk --clear \
-      -n 1:2048:+1907M -t 1:EF00 -c 1:"EFI System" \
-      -n 2:0:+1907M -t 2:ea00 -c 2:"Boot" \
+      -n 1:2048:+1907M -t 1:EF00 -c 1:"Arch Linux-EFI System" \
+      -n 2:0:+1907M -t 2:ea00 -c 2:"Arch Linux-Boot" \
       -n 3:0:+${arch_size_GIB}G -t 3:8309 -c 3:"Arch Linux" \
       "${BLOCK_DEVICE}"
 
@@ -54,7 +54,7 @@ read -r EFI_PARTITION
 
 echo -n "Enter the boot partition path: "
 read -r BOOT_PARTITION
-
+:allow-discards
 # read the LUKS partition path
 echo -n "Enter the LUKS partition path: "
 read -r NEW_PARTITION
@@ -163,7 +163,7 @@ pacman -Sy --noconfirm archlinux-keyring
 
 # install necessary packages
 # pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode crudini cryptsetup
-pacstrap -K /mnt base base-devel linux linux-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode crudini cryptsetup
+pacstrap -K /mnt base base-devel linux linux-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup
 
 # refind-install hook
 cat <<EOF >/etc/pacman.d/hooks/refind.hook
@@ -208,7 +208,7 @@ LUKS_UUID=$(blkid -s UUID -o value "${NEW_PARTITION}")
 echo "luks uuid $LUKS_UUID"
 
 # prepare boot options for refind
-BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:cryptlvm root=/dev/vg1/root"
+BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:cryptlvm:allow-discards root=/dev/vg1/root"
 RW_LOGLEVEL_OPTIONS="rw loglevel=3"
 # INITRD_OPTIONS="initrd=amd-ucode.img initrd=initramfs-%v.img"
 INITRD_OPTIONS=""
