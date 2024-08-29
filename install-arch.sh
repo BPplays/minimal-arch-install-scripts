@@ -60,10 +60,41 @@ echo -n "Enter the LUKS partition path: "
 read -r NEW_PARTITION
 
 # create a LUKS partiton
-cryptsetup luksFormat "${NEW_PARTITION}"
+# Turn off 'set -euo pipefail'
+set +euo pipefail
 
+# Define your command in a loop
+while true; do
+    cryptsetup luksFormat "${NEW_PARTITION}"
+
+    # Break the loop if the command succeeds (exit code 0)
+    if [[ $? -eq 0 ]]; then
+        break
+    fi
+
+    # echo "Command failed. Retrying..."
+    # sleep 2  # Optional: wait for 2 seconds before retrying
+done
+
+# Re-enable 'set -euo pipefail'
+set -euo pipefail
+
+set +euo pipefail
 # open the LUKS partition
-cryptsetup open "${NEW_PARTITION}" cryptlvm
+while true; do
+    cryptsetup open "${NEW_PARTITION}" cryptlvm
+
+    # Break the loop if the command succeeds (exit code 0)
+    if [[ $? -eq 0 ]]; then
+        break
+    fi
+
+    # echo "Command failed. Retrying..."
+    # sleep 2  # Optional: wait for 2 seconds before retrying
+done
+
+# Re-enable 'set -euo pipefail'
+set -euo pipefail
 
 # create physical volume on the LUKS partition
 pvcreate /dev/mapper/cryptlvm
