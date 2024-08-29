@@ -208,16 +208,15 @@ LUKS_UUID=$(blkid -s UUID -o value "${NEW_PARTITION}")
 echo "luks uuid $LUKS_UUID"
 
 # prepare boot options for refind
-BLK_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:cryptlvm root=/dev/vg1/root"
+BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:cryptlvm root=/dev/vg1/root"
 RW_LOGLEVEL_OPTIONS="rw loglevel=3"
-INITRD_OPTIONS="initrd=amd-ucode.img initrd=initramfs-%v.img"
+# INITRD_OPTIONS="initrd=amd-ucode.img initrd=initramfs-%v.img"
+INITRD_OPTIONS=""
 # configure refind
 cat <<EOF >/mnt/boot/refind_linux.conf
-"Boot with standard options"     "${BLK_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS}"
-"Boot using fallback initramfs"  "${BLK_OPTIONS} ${RW_LOGLEVEL_OPTIONS} initrd=amd-ucode.img initrd=initramfs-%v-fallback.img"
-"Boot to terminal"               "${BLK_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} systemd.unit=multi-user.target"
-"Boot to single-user mode"       "${BLK_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} single"
-"Boot with minimal options"      "${BLK_OPTIONS} ${INITRD_OPTIONS} ro"
+"Boot with standard options"     "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS}"
+"Boot to terminal"               "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} systemd.unit=multi-user.target"
+"Boot to single-user mode"       "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} single"
 EOF
 
 echo "cat /mnt/boot/refind_linux.conf"
