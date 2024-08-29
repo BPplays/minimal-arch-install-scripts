@@ -315,7 +315,7 @@ echo "sed refind stuff"
 
 set +euo pipefail
 mkdir -p /mnt/boot/efi/EFI/refind/themes
-git clone https://github.com/catppuccin/refind.git /mnt/boot/efi/EFI/refind/themes/catppuccin
+git clone https://github.com/BPplays/refind-catp.git /mnt/boot/efi/EFI/refind/themes/catppuccin
 if [ -f /mnt/boot/efi/EFI/refind/themes/catppuccin/mocha.conf ]; then
     echo "include themes/catppuccin/mocha.conf" | sudo tee -a /mnt/boot/efi/EFI/refind/refind.conf
 else
