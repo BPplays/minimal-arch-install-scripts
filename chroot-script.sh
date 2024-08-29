@@ -12,7 +12,7 @@ pacman -U  --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirror
 
 echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /etc/pacman.conf
 
-pacman -Syu  --noconfirm crudini
+pacman -Syu  --noconfirm crudini amd-ucode intel-ucode
 
 crudini --set /etc/pacman.conf options ParallelDownloads 256
 
