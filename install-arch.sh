@@ -35,7 +35,7 @@ export HOSTNAME="$HOSTNAME_t"
 
 while true; do
     # Prompt for the password
-    read -s -p "Enter password: " password
+    read -s -p "Enter root password: " password
     echo
 
     # Prompt for the confirmation
@@ -46,11 +46,7 @@ while true; do
     if [ "$password" == "$confirm_password" ]; then
         # Export the variable
         export ROOT_PASS="$password"
-        echo "Passwords match. Setting root password."
 
-        # Set the root password (you need sudo privileges for this)
-        echo "root:$ROOT_PASS" | sudo chpasswd
-        echo "Root password has been set."
         break
     else
         echo "Passwords do not match. Please try again."
@@ -99,7 +95,7 @@ while true; do
 
     while true; do
         # Prompt for the password
-        read -s -p "Enter password: " password
+        read -s -p "Enter luks encryption password: " password
         echo
 
         # Prompt for the confirmation
