@@ -33,6 +33,30 @@ echo -n "Enter hostname: "
 read -r HOSTNAME_t
 export HOSTNAME="$HOSTNAME_t"
 
+while true; do
+    # Prompt for the password
+    read -s -p "Enter password: " password
+    echo
+
+    # Prompt for the confirmation
+    read -s -p "Confirm password: " confirm_password
+    echo
+
+    # Check if passwords match
+    if [ "$password" == "$confirm_password" ]; then
+        # Export the variable
+        export ROOT_PASS="$password"
+        echo "Passwords match. Setting root password."
+
+        # Set the root password (you need sudo privileges for this)
+        echo "root:$ROOT_PASS" | sudo chpasswd
+        echo "Root password has been set."
+        break
+    else
+        echo "Passwords do not match. Please try again."
+    fi
+done
+
 
 arch_size_GIB=$(echo "$arch_size_gb * $gb_to_gib" | bc)
 
@@ -72,7 +96,31 @@ set +euo pipefail
 
 # Define your command in a loop
 while true; do
-    cryptsetup luksFormat "${NEW_PARTITION}"
+
+    while true; do
+        # Prompt for the password
+        read -s -p "Enter password: " password
+        echo
+
+        # Prompt for the confirmation
+        read -s -p "Confirm password: " confirm_password
+        echo
+
+        # Check if passwords match
+        if [ "$password" == "$confirm_password" ]; then
+            # Export the variable
+            export LUKS_PASS="$password"
+
+            break
+        else
+            echo "Passwords do not match. Please try again."
+        fi
+    done
+
+
+
+
+    echo -n "$LUKS_PASS" | cryptsetup luksFormat "${NEW_PARTITION}" --key-file=-
 
     # Break the loop if the command succeeds (exit code 0)
     if [[ $? -eq 0 ]]; then
@@ -90,7 +138,7 @@ set -euo pipefail
 
 set +euo pipefail
 while true; do
-    cryptsetup open "${NEW_PARTITION}" cryptlvm
+    echo -n "$LUKS_PASS" | cryptsetup open "${NEW_PARTITION}" cryptlvm --key-file=-
 
     # Break the loop if the command succeeds (exit code 0)
     if [[ $? -eq 0 ]]; then

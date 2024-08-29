@@ -27,14 +27,10 @@ locale-gen
 echo "LANG=en_US.UTF-8" >/etc/locale.conf
 
 # set the time zone
-echo -n "Enter Time Zone: "
-read -r TIME_ZONE
 ln -sf /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime
 hwclock --systohc
 
 # set hostname
-echo -n "Enter hostname: "
-read -r HOSTNAME
 echo "${HOSTNAME}" >/etc/hostname
 
 # configure hosts file
@@ -45,21 +41,22 @@ cat <<EOF >>/etc/hosts
 127.0.1.1    ${HOSTNAME}
 EOF
 
-# set root user password
-set +euo pipefail
-while true; do
-	passwd
+# # set root user password
+# set +euo pipefail
+# while true; do
+# 	passwd
+#
+# 	# Break the loop if the command succeeds (exit code 0)
+# 	if [[ $? -eq 0 ]]; then
+# 		break
+# 	fi
+#
+# 	# echo "Command failed. Retrying..."
+# 	# sleep 2  # Optional: wait for 2 seconds before retrying
+# done
+# set -euo pipefail
 
-	# Break the loop if the command succeeds (exit code 0)
-	if [[ $? -eq 0 ]]; then
-		break
-	fi
-
-	# echo "Command failed. Retrying..."
-	# sleep 2  # Optional: wait for 2 seconds before retrying
-done
-set -euo pipefail
-
+echo "root:$ROOT_PASS" | sudo chpasswd
 
 # configure mkinitcpio
 # sed -i '/^HOOKS/s/\(block \)\(.*filesystems\)/\1encrypt lvm2 \2/' /etc/mkinitcpio.conf
