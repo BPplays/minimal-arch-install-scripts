@@ -12,13 +12,12 @@ pacman -U  --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirror
 
 echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /etc/pacman.conf
 
-pacman -Syu  --noconfirm crudini amd-ucode intel-ucode
+pacman -Syu  --noconfirm crudini amd-ucode intel-ucode sudo
 
 crudini --set /etc/pacman.conf options ParallelDownloads 256
 
 set +euo pipefail
 pacman -Syu  --noconfirm freeipa-client freeipa-client-common freeipa-common dos2unix
-pacman -Syu  --noconfirm sudo
 set -euo pipefail
 
 # set settings related to locale
