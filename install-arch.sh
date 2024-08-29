@@ -79,8 +79,9 @@ done
 # Re-enable 'set -euo pipefail'
 set -euo pipefail
 
-set +euo pipefail
 # open the LUKS partition
+
+set +euo pipefail
 while true; do
     cryptsetup open "${NEW_PARTITION}" cryptlvm
 
@@ -92,8 +93,6 @@ while true; do
     # echo "Command failed. Retrying..."
     # sleep 2  # Optional: wait for 2 seconds before retrying
 done
-
-# Re-enable 'set -euo pipefail'
 set -euo pipefail
 
 # create physical volume on the LUKS partition
@@ -194,7 +193,7 @@ pacman -Sy --noconfirm archlinux-keyring
 
 # install necessary packages
 # pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode crudini cryptsetup
-pacstrap -K /mnt base base-devel linux linux-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup amd-ucode
+pacstrap -K /mnt base base-devel linux linux-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup
 
 # refind-install hook
 cat <<EOF >/etc/pacman.d/hooks/refind.hook
@@ -242,7 +241,7 @@ echo "luks uuid $LUKS_UUID"
 BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:cryptlvm:allow-discards root=/dev/vg1/root"
 RW_LOGLEVEL_OPTIONS="rw loglevel=3"
 # INITRD_OPTIONS="initrd=amd-ucode.img initrd=initramfs-%v.img"
-INITRD_OPTIONS=""
+INITRD_OPTIONS="add_efi_memmap initrd=boot\intel-ucode.img initrd=boot\amd-ucode.img initrd=boot\initramfs-%v.img"
 # configure refind
 cat <<EOF >/mnt/boot/refind_linux.conf
 "Boot with standard options"     "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS}"
