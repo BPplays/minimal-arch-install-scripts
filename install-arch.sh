@@ -54,7 +54,7 @@ read -r EFI_PARTITION
 
 echo -n "Enter the boot partition path: "
 read -r BOOT_PARTITION
-:allow-discards
+
 # read the LUKS partition path
 echo -n "Enter the LUKS partition path: "
 read -r NEW_PARTITION
