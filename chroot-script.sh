@@ -46,8 +46,19 @@ cat <<EOF >>/etc/hosts
 EOF
 
 # set root user password
-passwd
+set +euo pipefail
+while true; do
+	passwd
 
+	# Break the loop if the command succeeds (exit code 0)
+	if [[ $? -eq 0 ]]; then
+		break
+	fi
+
+	# echo "Command failed. Retrying..."
+	# sleep 2  # Optional: wait for 2 seconds before retrying
+done
+set -euo pipefail
 
 
 # configure mkinitcpio
