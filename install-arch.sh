@@ -18,6 +18,9 @@ echo ""
 
 lsblk
 
+echo ""
+
+
 # read the block device path you want to install Arch on
 echo -n "Enter the block device path you want to install Arch on: "
 read -r BLOCK_DEVICE
@@ -43,18 +46,18 @@ read -p "Is this correct? (y/n): " response
 # Handle user input
 if [[ "$response" =~ ^[Yy]$ ]]; then
     # Set the detected timezone
-    echo "Using $auto_tz as timezone"
     final_tz="$auto_tz"
 else
     # Prompt user to enter the correct timezone
     read -p "Please enter your timezone (e.g., 'Asia/Tokyo', 'America/Los_Angeles', 'America/New_York'): " final_tz
-    echo "Setting timezone to $final_tz..."
+    # echo "Setting timezone to $final_tz..."
 fi
 
 
 # echo -n "Enter Time Zone: "
 # read -r TIME_ZONE_t
 export TIME_ZONE="$final_tz"
+echo "Using $TIME_ZONE as timezone"
 
 echo -n "Enter hostname: "
 read -r HOSTNAME_t
