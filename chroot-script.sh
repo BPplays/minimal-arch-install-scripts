@@ -75,4 +75,8 @@ refind-install
 echo "refind installed"
 
 # enable NetworkManager systemd service
+
+
+iw reg set US
+
 systemctl enable NetworkManager
