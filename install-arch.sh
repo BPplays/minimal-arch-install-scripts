@@ -11,6 +11,8 @@ ping -q -c 1 archlinux.org >/dev/null || { echo "No Internet Connection!; "exit 
 # update system clock
 timedatectl set-ntp true
 
+lsblk
+
 # read the block device path you want to install Arch on
 echo -n "Enter the block device path you want to install Arch on: "
 read -r BLOCK_DEVICE
