@@ -292,7 +292,8 @@ echo "luks uuid $LUKS_UUID"
 BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:cryptlvm:allow-discards root=/dev/vg1/root"
 RW_LOGLEVEL_OPTIONS="rw loglevel=3"
 # INITRD_OPTIONS="initrd=amd-ucode.img initrd=initramfs-%v.img"
-INITRD_OPTIONS="add_efi_memmap initrd=intel-ucode.img initrd=amd-ucode.img initrd=initramfs-%v.img"
+# INITRD_OPTIONS="add_efi_memmap initrd=intel-ucode.img initrd=amd-ucode.img initrd=initramfs-%v.img"
+INITRD_OPTIONS="add_efi_memmap"
 # configure refind
 cat <<EOF >/mnt/boot/refind_linux.conf
 "Boot with standard options"     "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS}"
