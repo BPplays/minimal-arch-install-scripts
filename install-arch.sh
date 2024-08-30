@@ -27,9 +27,29 @@ read -r arch_size_gb
 # giga___10_power_9=1000000000
 gb_to_gib=0.9313225746
 
-echo -n "Enter Time Zone: "
-read -r TIME_ZONE_t
-export TIME_ZONE="$TIME_ZONE_t"
+final_tz=""
+# Fetch estimated timezone
+auto_tz=$(curl -s https://ipapi.co/timezone/)
+
+# Ask user to confirm or input the correct timezone
+echo "The estimated timezone based on your IP address is: $auto_tz"
+read -p "Is this correct? (y/n): " response
+
+# Handle user input
+if [[ "$response" =~ ^[Yy]$ ]]; then
+    # Set the detected timezone
+    echo "Using $auto_tz as timezone"
+    final_tz="$auto_tz"
+else
+    # Prompt user to enter the correct timezone
+    read -p "Please enter your timezone (e.g., 'Asia/Tokyo', 'America/Los_Angeles', 'America/New_York'): " final_tz
+    echo "Setting timezone to $final_tz..."
+fi
+
+
+# echo -n "Enter Time Zone: "
+# read -r TIME_ZONE_t
+export TIME_ZONE="$final_tz"
 
 echo -n "Enter hostname: "
 read -r HOSTNAME_t
