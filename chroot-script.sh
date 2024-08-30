@@ -63,11 +63,11 @@ echo "root:$ROOT_PASS" | sudo chpasswd
 
 # generate initramfs for linux and linux-lts
 set +euo pipefail
-mkinitcpio -P
-# mkinitcpio -p linux
-# echo "mkinitcpio -p linux"
-# mkinitcpio -p linux-lts
-# echo "mkinitcpio -p linux-lts"
+# mkinitcpio -P
+mkinitcpio -p linux
+echo "mkinitcpio -p linux"
+mkinitcpio -p linux-lts
+echo "mkinitcpio -p linux-lts"
 set -euo pipefail
 
 # install and configure refind
@@ -80,3 +80,51 @@ echo "refind installed"
 iw reg set US
 
 systemctl enable NetworkManager
+
+
+
+
+set +euo pipefail
+while true; do
+	# Ask the user if they want to cancel the FreeIPA installation
+	read -p "Do you want to install FreeIPA client using ipa-client-install? (y to proceed/n to cancel): " install_ipa
+	if [[ "$install_ipa" =~ ^[Nn]$ ]]; then
+		echo "Installation of FreeIPA client was cancelled."
+		break
+	fi
+
+	# Ask the user if they want to use --mkhomedir
+	read -p "Do you want to use the --mkhomedir option? (y/n): " use_mkhomedir
+	if [[ "$use_mkhomedir" =~ ^[Yy]$ ]]; then
+		mkhomedir="--mkhomedir"
+	else
+		mkhomedir=""
+	fi
+
+	# Ask the user if they want to use --force-join
+	read -p "Do you want to use the --force-join option? (y/n): " use_forcejoin
+	if [[ "$use_forcejoin" =~ ^[Yy]$ ]]; then
+		forcejoin="--force-join"
+	else
+		forcejoin=""
+	fi
+
+	# Construct the command with selected options
+	cmd="ipa-client-install $mkhomedir $forcejoin"
+	echo "Running command: $cmd"
+
+	# Execute the command
+	$cmd
+
+	# Check the exit status of the command
+	if [[ $? -eq 0 ]]; then
+		echo "FreeIPA client installation was successful."
+		break
+	else
+		echo "FreeIPA client installation failed. Retrying..."
+	fi
+done
+set -euo pipefail
+
+
+

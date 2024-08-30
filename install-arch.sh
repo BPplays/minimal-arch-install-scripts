@@ -306,6 +306,11 @@ cp mkinitcpio.conf mkinitcpio.conf_cp
 mv -f mkinitcpio.conf_cp /mnt/etc/mkinitcpio.conf
 dos2unix /mnt/etc/mkinitcpio.conf
 
+cp wifi_backend.conf wifi_backend.conf_cp
+mkdir -p /mnt/etc/NetworkManager/conf.d/
+mv -f wifi_backend.conf_cp /mnt/etc/NetworkManager/conf.d/wifi_backend.conf
+dos2unix /mnt/etc/NetworkManager/conf.d/wifi_backend.conf
+
 echo "cp chroot-script.sh /mnt"
 
 # chroot into the new system and run the chroot-script.sh script
