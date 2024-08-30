@@ -298,14 +298,14 @@ INITRD_OPTIONS="add_efi_memmap"
 cat <<EOF >/mnt/boot/refind_linux.conf
 "Boot with standard options"     "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS}"
 "Boot with nomodeset"               "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} nomodeset"
-"Boot using fallback initramfs"  "${BLK_OPTIONS} ${RW_LOGLEVEL_OPTIONS} initrd=intel-ucode.img initrd=amd-ucode.img initrd=initramfs-%v-fallback.img"
-"Boot using fallback initramfs with nomodeset"  "${BLK_OPTIONS} ${RW_LOGLEVEL_OPTIONS} initrd=intel-ucode.img initrd=amd-ucode.img initrd=initramfs-%v-fallback.img nomodeset"
+"Boot using fallback initramfs"  "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} initrd=intel-ucode.img initrd=amd-ucode.img initrd=initramfs-%v-fallback.img"
+"Boot using fallback initramfs with nomodeset"  "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} initrd=intel-ucode.img initrd=amd-ucode.img initrd=initramfs-%v-fallback.img nomodeset"
 "Boot to terminal"               "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} systemd.unit=multi-user.target"
 "Boot to terminal with nomodeset"               "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} systemd.unit=multi-user.target nomodeset"
 "Boot to single-user mode"       "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} single"
 "Boot to terminal with nomodeset"               "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} single nomodeset"
-"Boot with minimal options"      "${BLK_OPTIONS} ${INITRD_OPTIONS} ro"
-"Boot with minimal options with nomodeset"      "${BLK_OPTIONS} ${INITRD_OPTIONS} ro nomodeset"
+"Boot with minimal options"      "${BOOT_OPTIONS} ${INITRD_OPTIONS} ro"
+"Boot with minimal options with nomodeset"      "${BOOT_OPTIONS} ${INITRD_OPTIONS} ro nomodeset"
 EOF
 
 echo "cat /mnt/boot/refind_linux.conf"
