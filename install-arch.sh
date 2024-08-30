@@ -116,7 +116,7 @@ while true; do
 
 
 
-    echo -n "$LUKS_PASS" | cryptsetup luksFormat "${NEW_PARTITION}" --key-file=- --cipher aes-xts-plain64 --hash sha256 --iter-time 2000 --key-size 512
+    echo -n "$LUKS_PASS" | cryptsetup luksFormat "${NEW_PARTITION}" --key-file=- --cipher aes-xts-plain64 --hash sha256 --key-size 512
 
     # Break the loop if the command succeeds (exit code 0)
     if [[ $? -eq 0 ]]; then
