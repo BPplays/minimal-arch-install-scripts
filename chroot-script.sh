@@ -32,7 +32,8 @@ pacman -Syu  --noconfirm chaotic-aur/crudini amd-ucode intel-ucode sudo rclone
 crudini --set /etc/pacman.conf options ParallelDownloads 256
 
 set +euo pipefail
-pacman -Syu --noconfirm chaotic-aur/powerpill chaotic-aur/pm2ml chaotic-aur/python3-xcgf
+pacman -Syu --noconfirm chaotic-aur/pm2ml chaotic-aur/python3-xcgf
+pacman -Syu --noconfirm chaotic-aur/powerpill
 pacman -Syu --noconfirm chaotic-aur/yay
 TMPDIR=$(mktemp -d)
 git clone https://aur.archlinux.org/freeipa.git $TMPDIR
