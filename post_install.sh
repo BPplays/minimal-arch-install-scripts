@@ -1,10 +1,5 @@
 #!/bin/bash
 
-pacman -Syu --noconfirm chaotic-aur/pm2ml chaotic-aur/python3-xcgf
-pacman -Syu --noconfirm chaotic-aur/powerpill
-pacman -Syu --noconfirm chaotic-aur/yay
-
-pacman --needed -Syu vim git crudini cryptsetup amd-ucode intel-ucode iw wireless-regdb fprintd openssh dos2unix chaotic-aur/crudini amd-ucode intel-ucode sudo rclone
 
 TMPDIR=$(mktemp -d)
 git clone https://aur.archlinux.org/freeipa.git $TMPDIR
