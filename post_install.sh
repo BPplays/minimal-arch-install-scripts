@@ -55,4 +55,6 @@ KerberosAuthentication no
 ChallengeResponseAuthentication yes
 EOF
 
+systemctl start sshd
+systemctl enable sshd
 
