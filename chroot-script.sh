@@ -33,9 +33,16 @@ crudini --set /etc/pacman.conf options ParallelDownloads 256
 
 set +euo pipefail
 pacman -Syu --noconfirm yay
-yay -Syu --sudoloop --noconfirm
+TMPDIR=$(mktemp -d)
+git clone https://aur.archlinux.org/freeipa.git $TMPDIR
+gpg --import $TMPDIR/keys/pgp/*asc
+rm -fr $TMPDIR
+yay -Syu --sudoloop --noconfirm freeipa-client
 
-pacman -Syu  --noconfirm freeipa-client freeipa-client-common freeipa-common dos2unix
+
+
+# pacman -Syu  --noconfirm freeipa-client freeipa-client-common freeipa-common dos2unix
+pacman -Syu  --noconfirm dos2unix
 set -euo pipefail
 
 # set settings related to locale
