@@ -1,6 +1,12 @@
 #!/bin/bash
 
+TMPDIR=$(mktemp -d)
+git clone https://aur.archlinux.org/freeipa.git $TMPDIR
+gpg --import $TMPDIR/keys/pgp/*asc
+rm -fr $TMPDIR
+yay -Syu
 
+yay -Sua --sudoloop --noconfirm --aur libsepol
 yay -Sua --sudoloop --noconfirm --aur freeipa-client
 
 
@@ -31,7 +37,7 @@ while true; do
 	fi
 
 	# Construct the command with selected options
-	cmd="ipa-client-install $mkhomedir $forcejoin"
+	cmd="sudo ipa-client-install $mkhomedir $forcejoin"
 	echo "Running command: $cmd"
 
 	# Execute the command
