@@ -121,6 +121,8 @@ else
 	sudo useradd -m -d "$HOME_DIR" -G wheel "$USERNAME"
 fi
 
+echo "$USERNAME:$LOCAL_ADMIN_PASS" | sudo chpasswd
+
 # Verify if the user was added to the wheel group
 if id "$USERNAME" | grep -q "wheel"; then
 	echo "User '$USERNAME' successfully added to the 'wheel' group."

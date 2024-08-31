@@ -86,6 +86,25 @@ while true; do
     fi
 done
 
+while true; do
+    # Prompt for the password
+    read -s -p "Enter local_admin password: " password
+    echo
+
+    # Prompt for the confirmation
+    read -s -p "Confirm password: " confirm_password
+    echo
+
+    # Check if passwords match
+    if [ "$password" == "$confirm_password" ]; then
+        # Export the variable
+        export LOCAL_ADMIN_PASS="$password"
+
+        break
+    else
+        echo "Passwords do not match. Please try again."
+    fi
+done
 
 arch_size_GIB=$(echo "$arch_size_gb * $gb_to_gib" | bc)
 
