@@ -343,7 +343,7 @@ echo "genfstab"
 cat /mnt/etc/fstab
 
 # copy chroot-script.sh to /mnt
-cp chroot-script.sh /mnt
+# cp chroot-script.sh /mnt
 
 cp mkinitcpio.conf mkinitcpio.conf_cp
 mv -f mkinitcpio.conf_cp /mnt/etc/mkinitcpio.conf
@@ -359,7 +359,7 @@ cp wireless-regdom wireless-regdom_cp
 mkdir -p /mnt/etc/conf.d/
 mv -f wireless-regdom_cp /mnt/etc/conf.d/wireless-regdom
 
-echo "cp chroot-script.sh /mnt"
+# echo "cp chroot-script.sh /mnt"
 
 
 mkdir -p /mnt/etc/pacman.d/hooks/
@@ -367,6 +367,12 @@ cp -r ./pacmanhooks/* /mnt/etc/pacman.d/hooks/
 
 cp aur_freeipa_get_key.sh /mnt/usr/local/sbin/
 sudo chmod 755 /mnt/usr/local/sbin/aur_freeipa_get_key.sh
+
+if [ -f "./post_install.sh" ]; then
+  # If it exists, move it to ./Post_install.sh
+  mv -f ./post_install.sh ./Post_install.sh
+  echo "File renamed to ./Post_install.sh"
+fi
 
 cp Post_install.sh /mnt/usr/local/bin/
 sudo chmod 755 /mnt/usr/local/bin/Post_install.sh
