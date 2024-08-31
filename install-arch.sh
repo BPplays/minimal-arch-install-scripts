@@ -159,21 +159,23 @@ while true; do
     # sleep 2  # Optional: wait for 2 seconds before retrying
 done
 
-echo ""
-echo ""
-echo ""
-echo "==============="
-echo "==============="
-echo "==============="
-echo ""
-echo "user input done"
-echo ""
-echo "==============="
-echo "==============="
-echo "==============="
-echo ""
-echo ""
-echo ""
+# echo ""
+# echo ""
+# echo ""
+# echo "==============="
+# echo "==============="
+# echo "==============="
+# echo ""
+# echo "user input done"
+# echo ""
+# echo "==============="
+# echo "==============="
+# echo "==============="
+# echo ""
+# echo ""
+# echo ""
+
+
 # Re-enable 'set -euo pipefail'
 set -euo pipefail
 
