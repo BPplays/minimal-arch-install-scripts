@@ -37,7 +37,7 @@ TMPDIR=$(mktemp -d)
 git clone https://aur.archlinux.org/freeipa.git $TMPDIR
 gpg --import $TMPDIR/keys/pgp/*asc
 rm -fr $TMPDIR
-yay -Syu --sudoloop --noconfirm --aur freeipa-client
+yay -S --sudoloop --noconfirm --aur https://aur.archlinux.org/freeipa.git
 
 
 
