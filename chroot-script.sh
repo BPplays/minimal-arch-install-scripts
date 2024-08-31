@@ -4,7 +4,7 @@ set -euo pipefail
 
 mount -a
 
-cat <<EOF >>/etc/hosts
+cat <<EOF >>/etc/resolv.conf
 nameserver fd0e:a882:618c::20:0
 nameserver fd0e:a882:618c::20:1
 nameserver fd0e:a882:618c::20:2
@@ -32,11 +32,8 @@ pacman -Syu  --noconfirm crudini amd-ucode intel-ucode sudo
 crudini --set /etc/pacman.conf options ParallelDownloads 256
 
 set +euo pipefail
-cd ~
-git clone https://aur.archlinux.org/yay.git
-cd yay
-makepkg -si
-
+pacman -Syu --noconfirm yay
+yay -Syu --sudoloop --noconfirm
 
 pacman -Syu  --noconfirm freeipa-client freeipa-client-common freeipa-common dos2unix
 set -euo pipefail
