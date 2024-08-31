@@ -160,21 +160,21 @@ while true; do
     # sleep 2  # Optional: wait for 2 seconds before retrying
 done
 
-# echo ""
-# echo ""
-# echo ""
-# echo "==============="
-# echo "==============="
-# echo "==============="
-# echo ""
-# echo "user input done"
-# echo ""
-# echo "==============="
-# echo "==============="
-# echo "==============="
-# echo ""
-# echo ""
-# echo ""
+echo ""
+echo ""
+echo ""
+echo "==============="
+echo "==============="
+echo "==============="
+echo ""
+echo "user input done"
+echo ""
+echo "==============="
+echo "==============="
+echo "==============="
+echo ""
+echo ""
+echo ""
 
 
 # Re-enable 'set -euo pipefail'
@@ -294,7 +294,7 @@ pacman -Sy --noconfirm archlinux-keyring
 
 # install necessary packages
 # pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode crudini cryptsetup
-pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup amd-ucode intel-ucode iw wireless-regdb fprintd
+pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup amd-ucode intel-ucode iw wireless-regdb fprintd openssh
 
 # refind-install hook
 cat <<EOF >/etc/pacman.d/hooks/refind.hook
@@ -330,6 +330,11 @@ cp wifi_backend.conf wifi_backend.conf_cp
 mkdir -p /mnt/etc/NetworkManager/conf.d/
 mv -f wifi_backend.conf_cp /mnt/etc/NetworkManager/conf.d/wifi_backend.conf
 dos2unix /mnt/etc/NetworkManager/conf.d/wifi_backend.conf
+
+
+cp wireless-regdom wireless-regdom_cp
+mkdir -p /mnt/etc/conf.d/
+mv -f wireless-regdom_cp /mnt/etc/conf.d/wireless-regdom
 
 echo "cp chroot-script.sh /mnt"
 
