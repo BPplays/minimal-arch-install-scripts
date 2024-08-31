@@ -27,7 +27,7 @@ pacman -U  --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirror
 
 echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\nUsage = Sync Search" | tee -a /etc/pacman.conf
 
-pacman -Syu  --noconfirm chaotic-aur/crudini amd-ucode intel-ucode sudo
+pacman -Syu  --noconfirm chaotic-aur/crudini amd-ucode intel-ucode sudo rclone
 
 crudini --set /etc/pacman.conf options ParallelDownloads 256
 
