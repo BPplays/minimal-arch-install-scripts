@@ -37,7 +37,9 @@ gb_to_gib=0.9313225746
 
 final_tz=""
 # Fetch estimated timezone
+set +euo pipefail
 auto_tz=$(curl -s https://ipapi.co/timezone/)
+set -euo pipefail
 
 # Ask user to confirm or input the correct timezone
 echo "The estimated timezone based on your IP address is: $auto_tz"
@@ -274,7 +276,7 @@ pacman -Sy --noconfirm archlinux-keyring
 
 # install necessary packages
 # pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode crudini cryptsetup
-pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup amd-ucode intel-ucode iw
+pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup amd-ucode intel-ucode iw wireless-regdb
 
 # refind-install hook
 cat <<EOF >/etc/pacman.d/hooks/refind.hook
