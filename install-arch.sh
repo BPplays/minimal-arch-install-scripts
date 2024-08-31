@@ -43,9 +43,11 @@ set -euo pipefail
 
 # Ask user to confirm or input the correct timezone
 echo "The estimated timezone based on your IP address is: $auto_tz"
-read -p "Is this correct? (y/n): " response
+read -e -p "Is this correct? (Y/n): " response
 
 # Handle user input
+response=${response:-Y}  # Default to 'Y' if no input
+
 if [[ "$response" =~ ^[Yy]$ ]]; then
     # Set the detected timezone
     final_tz="$auto_tz"
@@ -54,7 +56,6 @@ else
     read -p "Please enter your timezone (e.g., 'Asia/Tokyo', 'America/Los_Angeles', 'America/New_York'): " final_tz
     # echo "Setting timezone to $final_tz..."
 fi
-
 
 # echo -n "Enter Time Zone: "
 # read -r TIME_ZONE_t

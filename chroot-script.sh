@@ -137,7 +137,9 @@ set -euo pipefail
 set +euo pipefail
 while true; do
 	# Ask the user if they want to cancel the FreeIPA installation
-	read -p "Do you want to install FreeIPA client using ipa-client-install? (y to proceed/n to cancel): " install_ipa
+	read -p "Do you want to install FreeIPA client using ipa-client-install? (y/N): " install_ipa
+
+	install_ipa=${install_ipa:-N}  # Default to 'Y' if no input
 	if [[ "$install_ipa" =~ ^[Nn]$ ]]; then
 		echo "Installation of FreeIPA client was cancelled."
 		break
