@@ -344,7 +344,8 @@ echo "genfstab"
 cat /mnt/etc/fstab
 
 # copy chroot-script.sh to /mnt
-# cp chroot-script.sh /mnt
+mkdir -p /mnt/opt/arch_install_sh
+cp chroot-script.sh /mnt/opt/arch_install_sh/
 
 cp mkinitcpio.conf mkinitcpio.conf_cp
 mv -f mkinitcpio.conf_cp /mnt/etc/mkinitcpio.conf
@@ -379,7 +380,7 @@ cp Post_install.sh /mnt/usr/local/bin/
 sudo chmod 755 /mnt/usr/local/bin/Post_install.sh
 
 # chroot into the new system and run the chroot-script.sh script
-arch-chroot /mnt ./chroot-script.sh
+arch-chroot /mnt ./opt/arch_install_sh/chroot-script.sh
 
 echo "arch-chroot /mnt ./chroot-script.sh"
 
