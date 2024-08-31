@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# List of AUR packages to install
-AUR_PACKAGES=(
-  "freeipa-client"
-)
+# # List of AUR packages to install
+# AUR_PACKAGES=(
+#   "freeipa-client"
+# )
 
 # Ensure the script is run as root
 if [ "$EUID" -ne 0 ]; then
@@ -30,11 +30,11 @@ makepkg -si --noconfirm
 cd /
 rm -rf "$TMPDIR"
 
-# Use yay to install AUR packages
-for package in "${AUR_PACKAGES[@]}"; do
-	yay -S --noconfirm "$package"
-done
+# # Use yay to install AUR packages
+# for package in "${AUR_PACKAGES[@]}"; do
+# 	yay -S --noconfirm "$package"
+# done
 
-echo "All specified AUR packages have been installed."
+# echo "All specified AUR packages have been installed."
 
 # End of script

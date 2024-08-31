@@ -1,0 +1,9 @@
+[Trigger]
+Operation = Upgrade
+Type = Package
+Target = *
+
+[Action]
+Description = Run aur_freeipa_get_key script before every upgrade
+When = PreTransaction
+Exec = /usr/local/sbin/aur_freeipa_get_key.sh
