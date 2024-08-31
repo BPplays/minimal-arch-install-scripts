@@ -82,6 +82,31 @@ iw reg set US
 systemctl enable NetworkManager
 
 
+set +euo pipefail
+# Define the username and home directory
+USERNAME="local_admin"
+HOME_DIR="/local-home/$USERNAME"
+mkdir -p "/local-home/"
+
+# Create the user with the specified home directory and add them to the 'wheel' group
+if id "$USERNAME" &>/dev/null; then
+	echo "User '$USERNAME' already exists. Skipping creation."
+else
+	echo "Creating user '$USERNAME' with home directory '$HOME_DIR'..."
+	sudo useradd -m -d "$HOME_DIR" -G wheel "$USERNAME"
+fi
+
+# Verify if the user was added to the wheel group
+if id "$USERNAME" | grep -q "wheel"; then
+	echo "User '$USERNAME' successfully added to the 'wheel' group."
+else
+	echo "Failed to add user '$USERNAME' to the 'wheel' group."
+fi
+
+echo "User '$USERNAME' is now a local admin with a home directory at '$HOME_DIR'."
+set -euo pipefail
+
+
 
 
 set +euo pipefail
