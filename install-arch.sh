@@ -343,6 +343,9 @@ cp -r ./pacmanhooks/* /mnt/etc/pacman.d/hooks/
 cp aur_freeipa_get_key.sh /mnt/usr/local/sbin/
 sudo chmod 755 /usr/local/sbin/aur_freeipa_get_key.sh
 
+cp post_install.sh /mnt/usr/local/bin/
+sudo chmod 755 /usr/local/bin/post_install.sh
+
 # chroot into the new system and run the chroot-script.sh script
 arch-chroot /mnt ./chroot-script.sh
 
