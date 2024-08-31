@@ -318,7 +318,7 @@ pacman -Sy --noconfirm archlinux-keyring
 
 # install necessary packages
 # pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode crudini cryptsetup
-pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup amd-ucode intel-ucode iw wireless-regdb fprintd openssh
+pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup amd-ucode intel-ucode iw wireless-regdb fprintd openssh dos2unix
 
 # refind-install hook
 cat <<EOF >/etc/pacman.d/hooks/refind.hook
@@ -346,6 +346,7 @@ cat /mnt/etc/fstab
 # copy chroot-script.sh to /mnt
 mkdir -p /mnt/opt/arch_install_sh
 cp chroot-script.sh /mnt/opt/arch_install_sh/
+dos2unix /mnt/opt/arch_install_sh/*
 
 cp mkinitcpio.conf mkinitcpio.conf_cp
 mv -f mkinitcpio.conf_cp /mnt/etc/mkinitcpio.conf
@@ -360,15 +361,18 @@ dos2unix /mnt/etc/NetworkManager/conf.d/wifi_backend.conf
 cp wireless-regdom wireless-regdom_cp
 mkdir -p /mnt/etc/conf.d/
 mv -f wireless-regdom_cp /mnt/etc/conf.d/wireless-regdom
+dos2unix /mnt/etc/conf.d/wireless-regdom
 
 # echo "cp chroot-script.sh /mnt"
 
 
 mkdir -p /mnt/etc/pacman.d/hooks/
 cp -r ./pacmanhooks/* /mnt/etc/pacman.d/hooks/
+dos2unix /mnt/etc/pacman.d/hooks/*
 
 cp aur_freeipa_get_key.sh /mnt/usr/local/sbin/
 sudo chmod 755 /mnt/usr/local/sbin/aur_freeipa_get_key.sh
+dos2unix /mnt/usr/local/sbin/aur_freeipa_get_key.sh
 
 if [ -f "./post_install.sh" ]; then
   # If it exists, move it to ./Post_install.sh
@@ -378,6 +382,7 @@ fi
 
 cp Post_install.sh /mnt/usr/local/bin/
 sudo chmod 755 /mnt/usr/local/bin/Post_install.sh
+dos2unix /mnt/usr/local/bin/Post_install.sh
 
 # chroot into the new system and run the chroot-script.sh script
 arch-chroot /mnt ./opt/arch_install_sh/chroot-script.sh

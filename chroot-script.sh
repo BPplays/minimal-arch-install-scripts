@@ -131,6 +131,19 @@ else
 fi
 
 echo "User '$USERNAME' is now a local admin with a home directory at '$HOME_DIR'."
+cat <<EOF >/etc/sudoers
+# User privilege specification
+root    ALL=(ALL:ALL) ALL
+
+# Allow members of group sudo to execute any command
+%sudo   ALL=(ALL:ALL) ALL
+%sudoers   ALL=(ALL:ALL) ALL
+%wheel   ALL=(ALL:ALL) ALL
+
+# See sudoers(5) for more information on "@include" directives:
+
+@includedir /etc/sudoers.d
+EOF
 set -euo pipefail
 
 
