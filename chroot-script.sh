@@ -3,6 +3,21 @@
 set -euo pipefail
 
 mount -a
+
+cat <<EOF >>/etc/hosts
+nameserver fd0e:a882:618c::20:0
+nameserver fd0e:a882:618c::20:1
+nameserver fd0e:a882:618c::20:2
+nameserver fd0e:a882:618c::
+nameserver 2601:204:4100:1db0:250:56ff:fe3e:d7b9
+nameserver 2601:204:4100:1db0:250:56ff:fe3c:e6c4
+nameserver 10.0.20.0
+nameserver 10.0.20.2
+nameserver 10.0.20.1
+nameserver 2620:fe::fe
+nameserver 2620:fe::9
+nameserver 9.9.9.9
+EOF
 pacman -Syu --noconfirm
 
 pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
@@ -17,6 +32,12 @@ pacman -Syu  --noconfirm crudini amd-ucode intel-ucode sudo
 crudini --set /etc/pacman.conf options ParallelDownloads 256
 
 set +euo pipefail
+cd ~
+git clone https://aur.archlinux.org/yay.git
+cd yay
+makepkg -si
+
+
 pacman -Syu  --noconfirm freeipa-client freeipa-client-common freeipa-common dos2unix
 set -euo pipefail
 
