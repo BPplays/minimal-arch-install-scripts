@@ -308,7 +308,7 @@ echo "pc u ml"
 echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /etc/pacman.conf
 
 pacman -Sy  --noconfirm crudini dos2unix
-crudini --set /etc/pacman.conf options ParallelDownloads 256
+crudini --set /etc/pacman.conf options ParallelDownloads 64
 # crudini --set /mnt/etc/pacman.conf options ParallelDownloads 32
 
 pacman -Sy --noconfirm archlinux-keyring
