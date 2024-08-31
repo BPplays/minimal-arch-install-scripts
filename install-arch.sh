@@ -361,6 +361,8 @@ mv -f wireless-regdom_cp /mnt/etc/conf.d/wireless-regdom
 
 echo "cp chroot-script.sh /mnt"
 
+
+mkdir -p /mnt/etc/pacman.d/hooks/
 cp -r ./pacmanhooks/* /mnt/etc/pacman.d/hooks/
 
 cp aur_freeipa_get_key.sh /mnt/usr/local/sbin/
