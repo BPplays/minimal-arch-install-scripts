@@ -213,6 +213,7 @@ while true; do
     if [[ $? -eq 0 ]]; then
         break
     fi
+    break
 
     # echo "Command failed. Retrying..."
     # sleep 2  # Optional: wait for 2 seconds before retrying
