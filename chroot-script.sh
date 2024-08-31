@@ -25,7 +25,7 @@ pacman-key --lsign-key 3056513887B78AEB
 pacman -U  --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
 pacman -U  --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 
-echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /etc/pacman.conf
+echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\nUsage = Sync Search" | tee -a /etc/pacman.conf
 
 pacman -Syu  --noconfirm crudini amd-ucode intel-ucode sudo
 
@@ -42,7 +42,7 @@ yay -Sua --sudoloop --noconfirm --aur freeipa-client
 
 
 # pacman -Syu  --noconfirm freeipa-client freeipa-client-common freeipa-common dos2unix
-pacman -Syu  --noconfirm dos2unix
+pacman -Syu  --noconfirm dos2unix fish zsh
 set -euo pipefail
 
 # set settings related to locale
