@@ -29,9 +29,10 @@ echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\nUsage = Sy
 
 pacman -Syu  --noconfirm chaotic-aur/crudini amd-ucode intel-ucode sudo rclone
 
-crudini --set /etc/pacman.conf options ParallelDownloads 256
+crudini --set /etc/pacman.conf options ParallelDownloads 64
 
 set +euo pipefail
+pacman -Syu --noconfirm inetutils
 pacman -Syu --noconfirm aria2
 pacman -Syu --noconfirm chaotic-aur/pm2ml chaotic-aur/python3-xcgf
 pacman -Syu --noconfirm chaotic-aur/powerpill
@@ -99,7 +100,7 @@ echo "mkinitcpio -p linux-lts"
 set -euo pipefail
 
 # install and configure refind
-refind-install
+refind-install --alldrivers
 echo "refind installed"
 
 # enable NetworkManager systemd service

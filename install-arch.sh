@@ -330,7 +330,7 @@ Target=refind
 [Action]
 Description = Updating rEFInd on ESP
 When=PostTransaction
-Exec=/usr/bin/refind-install
+Exec=/usr/bin/refind-install --alldrivers
 EOF
 
 
