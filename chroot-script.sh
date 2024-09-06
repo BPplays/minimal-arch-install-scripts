@@ -100,7 +100,7 @@ echo "mkinitcpio -p linux-lts"
 set -euo pipefail
 
 # install and configure refind
-refind-install --alldrivers
+refind-install
 echo "refind installed"
 
 # enable NetworkManager systemd service
