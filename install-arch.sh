@@ -318,7 +318,7 @@ pacman -Sy --noconfirm archlinux-keyring
 
 # install necessary packages
 # pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode crudini cryptsetup
-pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup amd-ucode intel-ucode iw wireless-regdb fprintd openssh dos2unix
+pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup amd-ucode intel-ucode iw wireless-regdb fprintd openssh dos2unix pipewire pipewire-audio pipewire-pulse pipewire-alsa wireplumber pipewire-jack
 
 # refind-install hook
 cat <<EOF >/etc/pacman.d/hooks/refind.hook
