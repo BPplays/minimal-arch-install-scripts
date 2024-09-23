@@ -251,6 +251,8 @@ lvcreate -L ${lv_size_mb}M -n var_cache $VG_NAME
 lvcreate -L ${lv_size_mb}M -n var_tmp $VG_NAME
 lvcreate -L ${lv_size_mb}M -n tmp $VG_NAME
 
+lvcreate -L 32G -n swap_lv1 $VG_NAME
+
 # create logical volume named home on the volume group with the rest of the space
 lvcreate -l 90%FREE vg1 -n root
 
@@ -262,6 +264,9 @@ mkfs.btrfs --csum XXHASH /dev/vg1/var_tmp
 
 mkfs.ext4 -m 2 /dev/vg1/tmp
 tune2fs -O ^has_journal /dev/vg1/tmp
+
+mkswap /dev/$VG_NAME/swap_lv1
+swapon /dev/$VG_NAME/swap_lv1
 
 # mount the root partition
 mount /dev/vg1/root /mnt
@@ -293,21 +298,21 @@ mkdir -p /mnt/boot/efi
 mount "${EFI_PARTITION}" /mnt/boot/efi
 
 
-sudo btrfs subvolume create /opt/swap/
-
-# use binary 1M instead of 1MB because that is what RAM is built to
-sudo dd if=/dev/zero of=/opt/swap/swap1 bs=1M count=32768
-
-sudo chattr +C /opt/swap/
-sudo chattr +C /opt/swap/swap1
-
-sudo chmod -R 600 /opt/swap/
-sudo chmod 600 /opt/swap/swap1
-
-sudo mkswap /opt/swap/swap1
-
-# i don't know if this gets in fstab by default will make it work in ansible
-# sudo swapon /opt/swap/swap1
+# sudo btrfs subvolume create /opt/swap/
+#
+# # use binary 1M instead of 1MB because that is what RAM is built to
+# sudo dd if=/dev/zero of=/opt/swap/swap1 bs=1M count=32768
+#
+# sudo chattr +C /opt/swap/
+# sudo chattr +C /opt/swap/swap1
+#
+# sudo chmod -R 600 /opt/swap/
+# sudo chmod 600 /opt/swap/swap1
+#
+# sudo mkswap /opt/swap/swap1
+#
+# # i don't know if this gets in fstab by default will make it work in ansible
+# # sudo swapon /opt/swap/swap1
 
 
 # show the mounted partitions
