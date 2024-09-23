@@ -293,6 +293,23 @@ mkdir -p /mnt/boot/efi
 mount "${EFI_PARTITION}" /mnt/boot/efi
 
 
+sudo btrfs subvolume create /opt/swap/
+
+# use binary 1M instead of 1MB because that is what RAM is built to
+sudo dd if=/dev/zero of=/opt/swap/swap1 bs=1M count=32768
+
+sudo chattr +C /opt/swap/
+sudo chattr +C /opt/swap/swap1
+
+sudo chmod -R 600 /opt/swap/
+sudo chmod 600 /opt/swap/swap1
+
+sudo mkswap /opt/swap/swap1
+
+# i don't know if this gets in fstab by default will make it work in ansible
+# sudo swapon /opt/swap/swap1
+
+
 # show the mounted partitions
 lsblk
 
