@@ -2,6 +2,46 @@
 
 set -euo pipefail
 
+pacman -Sy  --noconfirm bc
+
+convert_bytes_gib() {
+    local bytes=$1
+    local gib=$(echo "scale=4; $bytes / (1024^3)" | bc)
+    local gb=$(echo "scale=4; $bytes / (1000^3)" | bc)
+
+    echo "$gib GiB"  # Return both values
+}
+convert_bytes_gb() {
+    local bytes=$1
+    local gb=$(echo "scale=4; $bytes / (1000^3)" | bc)
+
+    echo "$gb GB"  # Return both values
+}
+
+convert_gib_to_mib() {
+    local gib="$1"
+    local mib=$(echo "$gib * 1024" | bc)
+    echo "$gib GiB is $mib MiB"
+}
+
+convert_gb_to_mib() {
+    local gb="$1"
+    local mib=$(echo "$gb * 1000" | bc)
+    echo "$gb GB is $mib MiB"
+}
+
+get_swap_size() {
+    # local bytes=$1
+    # local gib=$(echo "scale=4; $bytes / (1024^3)" | bc)
+    # local gb=$(echo "scale=4; $bytes / (1000^3)" | bc)
+    if [ "$ram_si" == "true" ]; then
+        echo $(convert_gb_to_mib $SWAP_SIZE)
+    else
+        echo $(convert_gib_to_mib $SWAP_SIZE)
+    fi
+
+}
+
 # check if boot type is UEFI
 ls /sys/firmware/efi/efivars || { echo "Boot Type Is Not UEFI!; "exit 1; }
 
@@ -29,7 +69,28 @@ read -r BLOCK_DEVICE
 echo -n "Do you want to do partitioning manually with cfdisk? [y/N]: "
 read -r PARTITIONING
 
-read -p "Enter swap size in GiB (nothing or 0 means no swap): " SWAP_SIZE
+ram_bytes=$(free --bytes | grep 'Mem:' | awk '{print $2}')
+ram_gb=$(convert_bytes_gb $ram_bytes)
+ram_gib=$(convert_bytes_gib $ram_bytes)
+read -p "would you like to use si decimal prefixes for RAM and swap over base-2 prefixes (GB is si, GiB is base-2. base-2 is more standard for RAM and the default here)? [y/N]" response
+response=${response:-N}  # Default to 'Y' if no input
+if [[ "$response" =~ ^[Yy]$ ]]; then
+    ram_si=true
+    echo "RAM SIZE $ram_gb"
+
+    echo -n "Enter swap size in GB (nothing or 0 means no swap):"
+
+    read -r SWAP_SIZE
+
+else
+    ram_si=false
+    echo "RAM SIZE $ram_gib"
+    echo -n "Enter swap size in GiB (nothing or 0 means no swap):"
+
+    read -r SWAP_SIZE
+fi
+echo "RAM Total"
+free --gibi -h -t | grep 'Mem:' | awk '{print $2}' | grep -oE '[0-9]+([.,][0-9]+)?' | awk '{print $0 " GiB"}'
 
 
 echo -n "main partition size GB: "
@@ -117,9 +178,9 @@ if [ "${PARTITIONING}" == "y" ]; then
     cfdisk "${BLOCK_DEVICE}"
 else
     sgdisk --clear \
-      -n 1:2048:+1907M -t 1:EF00 -c 1:"Arch Linux-EFI System" \
-      -n 2:0:+1907M -t 2:ea00 -c 2:"Arch Linux-Boot" \
-      -n 3:0:+${arch_size_GIB}G -t 3:8309 -c 3:"Arch Linux" \
+      -n 1:2048:+1500MB -t 1:EF00 -c 1:"Arch Linux-EFI System" \
+      -n 2:0:+2000MB -t 2:ea00 -c 2:"Arch Linux-Boot" \
+      -n 3:0:+${arch_size_GB}GB -t 3:8309 -c 3:"Arch Linux" \
       "${BLOCK_DEVICE}"
 
     # format EFI partition
@@ -259,7 +320,7 @@ if [[ -z "$SWAP_SIZE" || "$SWAP_SIZE" == "0" ]]; then
     echo "skipping swap partition"
 else
     echo "making swap partition"
-    lvcreate -L "${SWAP_SIZE}G" -n swap_lv1 "$VG_NAME"
+    lvcreate -L "$(get_swap_size)M" -n swap_lv1 "$VG_NAME"
 fi
 
 # create logical volume named home on the volume group with the rest of the space
