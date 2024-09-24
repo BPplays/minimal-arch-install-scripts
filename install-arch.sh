@@ -6,14 +6,14 @@ pacman -Sy  --noconfirm bc
 
 convert_bytes_gib() {
 	local bytes=$1
-	local gib=$(echo "$bytes / (1024^3)" | bc -l)
+	local gib=$(echo "$bytes / (1024^3)" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')
 
 	echo "$gib GiB"  # Return both values
 }
 
 convert_bytes_mib() {
 	local bytes=$1
-	local mib=$(echo "$bytes / (1024^2)" | bc -l)
+	local mib=$(echo "$bytes / (1024^2)" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')
 
 	echo "$mib"  # Return both values
 }
@@ -21,21 +21,21 @@ convert_bytes_mib() {
 
 convert_bytes_gb() {
 	local bytes=$1
-	local gb=$(echo "$bytes / (1000^3)" | bc -l)
+	local gb=$(echo "$bytes / (1000^3)" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')
 
 	echo "$gb GB"  # Return both values
 }
 
 convert_bytes_mb() {
 	local bytes=$1
-	local mb=$(echo "$bytes / (1000^2)" | bc -l)
+	local mb=$(echo "$bytes / (1000^2)" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')
 
 	echo "$mb"  # Return both values
 }
 
 convert_gib_to_mib() {
 	local gib="$1"
-	local mib=$(echo "$gib * 1024" | bc -l)
+	local mib=$(echo "$gib * 1024" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')
 	echo "$mib"
 }
 
@@ -46,7 +46,7 @@ convert_gb_to_mib() {
 	fi
 
 	size_in_gb=$1
-	echo "$(echo "($size_in_gb) * (1000000000 / 1048576)" | bc -l)"
+	echo "$(echo "($size_in_gb) * (1000000000 / 1048576)" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')"
 }
 
 get_swap_size() {
