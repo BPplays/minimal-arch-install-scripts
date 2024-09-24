@@ -274,8 +274,11 @@ mkfs.btrfs --csum XXHASH /dev/vg1/var_tmp
 mkfs.ext4 -m 2 /dev/vg1/tmp
 tune2fs -O ^has_journal /dev/vg1/tmp
 
-mkswap /dev/$VG_NAME/swap_lv1
-swapon /dev/$VG_NAME/swap_lv1
+
+if [[ -z "$SWAP_SIZE" || "$SWAP_SIZE" == "0" ]]; then
+    mkswap /dev/$VG_NAME/swap_lv1
+    swapon /dev/$VG_NAME/swap_lv1
+fi
 
 # mount the root partition
 mount /dev/vg1/root /mnt
