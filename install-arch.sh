@@ -7,15 +7,30 @@ pacman -Sy  --noconfirm bc
 convert_bytes_gib() {
     local bytes=$1
     local gib=$(echo "scale=4; $bytes / (1024^3)" | bc)
-    local gb=$(echo "scale=4; $bytes / (1000^3)" | bc)
 
     echo "$gib GiB"  # Return both values
 }
+
+convert_bytes_mib() {
+    local bytes=$1
+    local mib=$(echo "scale=4; $bytes / (1024^2)" | bc)
+
+    echo "$mib"  # Return both values
+}
+
+
 convert_bytes_gb() {
     local bytes=$1
     local gb=$(echo "scale=4; $bytes / (1000^3)" | bc)
 
     echo "$gb GB"  # Return both values
+}
+
+convert_bytes_mb() {
+    local bytes=$1
+    local mb=$(echo "scale=4; $bytes / (1000^2)" | bc)
+
+    echo "$mb"  # Return both values
 }
 
 convert_gib_to_mib() {
@@ -399,6 +414,7 @@ lv_size_bytes=$((size_2_percent_bytes > min_size_bytes ? size_2_percent_bytes : 
 
 # Convert the size to MB (LVM command requires sizes in MB)
 lv_size_mb=$((lv_size_bytes / 1000000))
+lv_size_mb=$(convert_bytes_mib lv_size_bytes)
 
 # Create the logical volume with the calculated size
 lvcreate -L ${lv_size_mb}M -n var_log $VG_NAME
