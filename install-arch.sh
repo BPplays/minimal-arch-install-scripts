@@ -103,6 +103,7 @@ print_silsblk() {
     # echo "$num2"
     # echo "$modified_string"
 
+    result=""
     while IFS= read -r line; do
       result+="${line:0:num1-1}${line:num2}\n"
     done <<< "$lsblk_out"
