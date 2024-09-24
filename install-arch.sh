@@ -6,14 +6,14 @@ pacman -Sy  --noconfirm bc
 
 convert_bytes_gib() {
 	local bytes=$1
-	local gib=$(echo "scale=4; $bytes / (1024^3)" | bc)
+	local gib=$(echo "$bytes / (1024^3)" | bc -l)
 
 	echo "$gib GiB"  # Return both values
 }
 
 convert_bytes_mib() {
 	local bytes=$1
-	local mib=$(echo "scale=4; $bytes / (1024^2)" | bc)
+	local mib=$(echo "$bytes / (1024^2)" | bc -l)
 
 	echo "$mib"  # Return both values
 }
@@ -21,21 +21,21 @@ convert_bytes_mib() {
 
 convert_bytes_gb() {
 	local bytes=$1
-	local gb=$(echo "scale=4; $bytes / (1000^3)" | bc)
+	local gb=$(echo "$bytes / (1000^3)" | bc -l)
 
 	echo "$gb GB"  # Return both values
 }
 
 convert_bytes_mb() {
 	local bytes=$1
-	local mb=$(echo "scale=4; $bytes / (1000^2)" | bc)
+	local mb=$(echo "$bytes / (1000^2)" | bc -l)
 
 	echo "$mb"  # Return both values
 }
 
 convert_gib_to_mib() {
 	local gib="$1"
-	local mib=$(echo "$gib * 1024" | bc)
+	local mib=$(echo "$gib * 1024" | bc -l)
 	echo "$mib"
 }
 
