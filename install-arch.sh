@@ -89,8 +89,6 @@ else
 
     read -r SWAP_SIZE
 fi
-echo "RAM Total"
-free --gibi -h -t | grep 'Mem:' | awk '{print $2}' | grep -oE '[0-9]+([.,][0-9]+)?' | awk '{print $0 " GiB"}'
 
 
 echo -n "main partition size GB: "
@@ -180,7 +178,7 @@ else
     sgdisk --clear \
       -n 1:2048:+1500MB -t 1:EF00 -c 1:"Arch Linux-EFI System" \
       -n 2:0:+2000MB -t 2:ea00 -c 2:"Arch Linux-Boot" \
-      -n 3:0:+${arch_size_GB}GB -t 3:8309 -c 3:"Arch Linux" \
+      -n 3:0:+${arch_size_gb}GB -t 3:8309 -c 3:"Arch Linux" \
       "${BLOCK_DEVICE}"
 
     # format EFI partition
