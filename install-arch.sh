@@ -29,6 +29,9 @@ read -r BLOCK_DEVICE
 echo -n "Do you want to do partitioning manually with cfdisk? [y/N]: "
 read -r PARTITIONING
 
+read -p "Enter swap size in GiB (nothing or 0 means no swap): " SWAP_SIZE
+
+
 echo -n "main partition size GB: "
 read -r arch_size_gb
 
@@ -251,7 +254,13 @@ lvcreate -L ${lv_size_mb}M -n var_cache $VG_NAME
 lvcreate -L ${lv_size_mb}M -n var_tmp $VG_NAME
 lvcreate -L ${lv_size_mb}M -n tmp $VG_NAME
 
-lvcreate -L 32G -n swap_lv1 $VG_NAME
+
+if [[ -z "$SWAP_SIZE" || "$SWAP_SIZE" == "0" ]]; then
+    echo "skipping swap partition"
+else
+    echo "making swap partition"
+    lvcreate -L "${SWAP_SIZE}G" -n swap_lv1 "$VG_NAME"
+fi
 
 # create logical volume named home on the volume group with the rest of the space
 lvcreate -l 90%FREE vg1 -n root
