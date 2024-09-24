@@ -338,9 +338,9 @@ if [ "${PARTITIONING}" == "y" ]; then
 	cfdisk "${BLOCK_DEVICE}"
 else
 	sgdisk --clear \
-		-n 1:2048:+$(convert_gb_to_kib 1.5)kib -t 1:EF00 -c 1:"Arch Linux-EFI System" \
-		-n 2:0:+$(convert_gb_to_kib 2)kib -t 2:ea00 -c 2:"Arch Linux-Boot" \
-		-n 3:0:+${arch_size_KIB}kib -t 3:8309 -c 3:"Arch Linux" \
+		-n 1:2048:+$(awk "BEGIN {print int($(convert_gb_to_kib 1.5))}")kib -t 1:EF00 -c 1:"Arch Linux-EFI System" \
+		-n 2:0:+$(awk "BEGIN {print int($(convert_gb_to_kib 2))}")kib -t 2:ea00 -c 2:"Arch Linux-Boot" \
+		-n 3:0:+$(awk "BEGIN {print int(${arch_size_KIB})}")kib -t 3:8309 -c 3:"Arch Linux" \
 		"${BLOCK_DEVICE}"
 
 	# format EFI partition
