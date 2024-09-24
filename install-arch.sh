@@ -637,6 +637,11 @@ LUKS_UUID=$(blkid -s UUID -o value "${NEW_PARTITION}")
 
 echo "luks uuid $LUKS_UUID"
 
+
+cat <<EOF >/mnt/boot/refind_linux.conf
+cryptlvm    UUID=${LUKS_UUID}    none    luks
+EOF
+
 # prepare boot options for refind
 BOOT_OPTIONS="cryptdevice=UUID=${LUKS_UUID}:cryptlvm:allow-discards root=/dev/vg1/root"
 RW_LOGLEVEL_OPTIONS="rw loglevel=3"
