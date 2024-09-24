@@ -276,6 +276,8 @@ tune2fs -O ^has_journal /dev/vg1/tmp
 
 
 if [[ -z "$SWAP_SIZE" || "$SWAP_SIZE" == "0" ]]; then
+    sleep 0
+else
     mkswap /dev/$VG_NAME/swap_lv1
     swapon /dev/$VG_NAME/swap_lv1
 fi
