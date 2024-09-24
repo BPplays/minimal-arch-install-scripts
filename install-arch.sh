@@ -589,6 +589,12 @@ cp mkinitcpio.conf mkinitcpio.conf_cp
 mv -f mkinitcpio.conf_cp /mnt/etc/mkinitcpio.conf
 dos2unix /mnt/etc/mkinitcpio.conf
 
+
+cp vconsole.conf vconsole.conf_cp
+mv -f vconsole.conf_cp /mnt/etc/vconsole.conf
+dos2unix /mnt/etc/vconsole.conf
+
+
 cp wifi_backend.conf wifi_backend.conf_cp
 mkdir -p /mnt/etc/NetworkManager/conf.d/
 mv -f wifi_backend.conf_cp /mnt/etc/NetworkManager/conf.d/wifi_backend.conf
