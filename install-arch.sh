@@ -190,6 +190,7 @@ while true; do
 done
 
 arch_size_GIB=$(echo "$arch_size_gb * $gb_to_gib" | bc)
+arch_size_MIB=$(convert_gb_to_mib $arch_size_gb)
 
 # if the user wants to create [one] LUKS partition manually with cfdisk (in case there are already other OS's installed)
 if [ "${PARTITIONING}" == "y" ]; then
@@ -199,7 +200,7 @@ else
     sgdisk --clear \
       -n 1:2048:+1500MB -t 1:EF00 -c 1:"Arch Linux-EFI System" \
       -n 2:0:+2000MB -t 2:ea00 -c 2:"Arch Linux-Boot" \
-      -n 3:0:+${arch_size_GIB}GiB -t 3:8309 -c 3:"Arch Linux" \
+      -n 3:0:+${arch_size_MIB}MiB -t 3:8309 -c 3:"Arch Linux" \
       "${BLOCK_DEVICE}"
 
     # format EFI partition
