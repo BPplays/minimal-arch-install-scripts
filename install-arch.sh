@@ -82,28 +82,32 @@ print_silsblk() {
 	# }')
 
 	to_3rd_col=$(echo "$lsblk_out" | awk '{
-		# Find the end index of column 3
-		match($0, /[^ ]+ +[^ ]+ +[^ ]+/)
-		end_col3 = RSTART + RLENGTH - 1
+		if (NF >= 4) {
+			# Find the end index of column 3
+			match($0, /[^ ]+ +[^ ]+ +[^ ]+/)
+			end_col3 = RSTART + RLENGTH - 1
 
-		# Find the start index of column 4
-		match(substr($0, end_col3 + 1), /[^ ]+/)
-		start_col4 = end_col3 + RSTART
+			# Find the start index of column 4
+			match(substr($0, end_col3 + 1), /[^ ]+/)
+			start_col4 = end_col3 + RSTART
 
-		print end_col3
+			print end_col3
+		}
 	}' | sort -n | tail -n 1 )
 
 
 	to_4rd_col_start=$(echo "$lsblk_out" | awk '{
-		# Find the end index of column 3
-		match($0, /[^ ]+ +[^ ]+ +[^ ]+/)
-		end_col3 = RSTART + RLENGTH - 1
+		if (NF >= 4) {
+			# Find the end index of column 3
+			match($0, /[^ ]+ +[^ ]+ +[^ ]+/)
+			end_col3 = RSTART + RLENGTH - 1
 
-		# Find the start index of column 4
-		match(substr($0, end_col3 + 1), /[^ ]+/)
-		start_col4 = end_col3 + RSTART
+			# Find the start index of column 4
+			match(substr($0, end_col3 + 1), /[^ ]+/)
+			start_col4 = end_col3 + RSTART
 
-		print start_col4
+			print start_col4
+		}
 	}' | sort -n | head -n 1)
 
 
@@ -111,8 +115,8 @@ print_silsblk() {
 	# spc_rmv=$((to_3rd_col - to_4rd_col_start))
 	# num1=$((to_3rd_col + 1))
 	# num2=$((to_4rd_col_start - 2))
-	num1=$((to_3rd_col + 2))
-	num2=$to_4rd_col_start
+	num1=$((to_3rd_col + 1))
+	num2=$((to_4rd_col_start - 2))
 
 	# modified_string=$(echo "$lsblk_out" | sed "${num1},${num2}d")
 	# echo "$num1"
