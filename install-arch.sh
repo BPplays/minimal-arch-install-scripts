@@ -60,7 +60,24 @@ echo ""
 echo ""
 echo ""
 
-lsblk
+# lsblk
+
+
+echo "==============="
+echo "==============="
+echo "==============="
+echo ""
+echo "ALL LSBLK RESULTS ARE CONVERTED TO SI PREFIXES GB INSTEAD OF DEFAULT GIB"
+echo ""
+echo "==============="
+echo "==============="
+echo "==============="
+echo ""
+echo ""
+echo ""
+echo ""
+
+lsblk --bytes | numfmt --field 4 --header --to=si --format="%.2f"
 
 echo ""
 
@@ -182,7 +199,7 @@ else
     sgdisk --clear \
       -n 1:2048:+1500MB -t 1:EF00 -c 1:"Arch Linux-EFI System" \
       -n 2:0:+2000MB -t 2:ea00 -c 2:"Arch Linux-Boot" \
-      -n 3:0:+${arch_size_gb}GB -t 3:8309 -c 3:"Arch Linux" \
+      -n 3:0:+${arch_size_GIB}GiB -t 3:8309 -c 3:"Arch Linux" \
       "${BLOCK_DEVICE}"
 
     # format EFI partition
@@ -191,7 +208,7 @@ else
 fi
 
 # show partitions
-lsblk
+lsblk --bytes | numfmt --field 4 --header --to=si --format="%.2f"
 
 # read the boot/efi partition path
 echo -n "Enter the efi partition path: "
@@ -393,7 +410,7 @@ mount "${EFI_PARTITION}" /mnt/boot/efi
 
 
 # show the mounted partitions
-lsblk
+lsblk --bytes | numfmt --field 4 --header --to=si --format="%.2f"
 
 pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 echo "pc recv"
