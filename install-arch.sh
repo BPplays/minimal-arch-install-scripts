@@ -76,7 +76,7 @@ read -r PARTITIONING
 ram_bytes=$(free --bytes | grep 'Mem:' | awk '{print $2}')
 ram_gb=$(convert_bytes_gb $ram_bytes)
 ram_gib=$(convert_bytes_gib $ram_bytes)
-read -p "would you like to use si decimal prefixes for RAM and swap over base-2 prefixes (GB is si, GiB is base-2. base-2 is more standard for RAM and the default here)? [y/N]" response
+read -p "would you like to use si decimal prefixes for RAM and swap over base-2 prefixes (GB is si, GiB is base-2. base-2 is more standard for RAM and the default here)? [y/N]: " response
 response=${response:-N}  # Default to 'Y' if no input
 if [[ "$response" =~ ^[Yy]$ ]]; then
     ram_si=true
