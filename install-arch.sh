@@ -21,13 +21,17 @@ convert_bytes_gb() {
 convert_gib_to_mib() {
     local gib="$1"
     local mib=$(echo "$gib * 1024" | bc)
-    echo "$gib GiB is $mib"
+    echo "$mib"
 }
 
 convert_gb_to_mib() {
-    local gb="$1"
-    local mib=$(echo "$gb * 1000" | bc)
-    echo "$gb GB is $mib"
+    if [ -z "$1" ]; then
+        echo "Usage: convert_gb_to_mib <size_in_GB>"
+        return 1
+    fi
+
+    size_in_gb=$1
+    echo "$(echo "(size_in_gb) * (1000000000 / 1048576)" | bc -l)"
 }
 
 get_swap_size() {
