@@ -67,6 +67,27 @@ convert_gb_to_byte() {
 }
 
 
+convert_gb_to_kib() {
+	if [ -z "$1" ]; then
+		echo "Usage: convert_gb_to_mib <size_in_GB>"
+		return 1
+	fi
+
+	local size_in_gb=$1
+	echo "$(echo "$size_in_gb * ((10^9) / 1024)" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')"
+}
+
+convert_gb_to_kb() {
+	if [ -z "$1" ]; then
+		echo "Usage: convert_gb_to_mib <size_in_GB>"
+		return 1
+	fi
+
+	local size_in_gb=$1
+	echo "$(echo "$size_in_gb * (10^6)" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')"
+}
+
+
 
 
 get_swap_size() {
@@ -308,6 +329,8 @@ done
 
 arch_size_GIB=$(echo "$arch_size_gb * $gb_to_gib" | bc)
 arch_size_MIB=$(convert_gb_to_mib $arch_size_gb)
+arch_size_KIB=$(convert_gb_to_kib $arch_size_gb)
+arch_size_byte=$(convert_gb_to_byte $arch_size_gb)
 
 # if the user wants to create [one] LUKS partition manually with cfdisk (in case there are already other OS's installed)
 if [ "${PARTITIONING}" == "y" ]; then
@@ -315,9 +338,9 @@ if [ "${PARTITIONING}" == "y" ]; then
 	cfdisk "${BLOCK_DEVICE}"
 else
 	sgdisk --clear \
-		-n 1:2048:+$(convert_gb_to_mib 1.5)MiB -t 1:EF00 -c 1:"Arch Linux-EFI System" \
-		-n 2:0:+$(convert_gb_to_mib 2)MiB -t 2:ea00 -c 2:"Arch Linux-Boot" \
-		-n 3:0:+${arch_size_MIB}MiB -t 3:8309 -c 3:"Arch Linux" \
+		-n 1:2048:+$(convert_gb_to_kib 1.5)kib -t 1:EF00 -c 1:"Arch Linux-EFI System" \
+		-n 2:0:+$(convert_gb_to_kib 2)kib -t 2:ea00 -c 2:"Arch Linux-Boot" \
+		-n 3:0:+${arch_size_KIB}kib -t 3:8309 -c 3:"Arch Linux" \
 		"${BLOCK_DEVICE}"
 
 	# format EFI partition
