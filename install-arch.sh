@@ -21,13 +21,13 @@ convert_bytes_gb() {
 convert_gib_to_mib() {
     local gib="$1"
     local mib=$(echo "$gib * 1024" | bc)
-    echo "$gib GiB is $mib MiB"
+    echo "$gib GiB is $mib"
 }
 
 convert_gb_to_mib() {
     local gb="$1"
     local mib=$(echo "$gb * 1000" | bc)
-    echo "$gb GB is $mib MiB"
+    echo "$gb GB is $mib"
 }
 
 get_swap_size() {
