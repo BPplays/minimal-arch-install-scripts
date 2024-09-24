@@ -49,14 +49,34 @@ convert_gb_to_mib() {
 	echo "$(echo "($size_in_gb) * (1000000000 / 1048576)" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')"
 }
 
+
+
+convert_gib_to_byte() {
+	local gib="$1"
+	echo "$(echo "$gib * (2^30)" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')"
+}
+
+convert_gb_to_byte() {
+	if [ -z "$1" ]; then
+		echo "Usage: convert_gb_to_mib <size_in_GB>"
+		return 1
+	fi
+
+	local size_in_gb=$1
+	echo "$(echo "$size_in_gb * (10^9)" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')"
+}
+
+
+
+
 get_swap_size() {
 	# local bytes=$1
 	# local gib=$(echo "scale=4; $bytes / (1024^3)" | bc)
 	# local gb=$(echo "scale=4; $bytes / (1000^3)" | bc)
 	if [ "$ram_si" == "true" ]; then
-		echo $(convert_gb_to_mib $SWAP_SIZE)
+		echo $(convert_gb_to_byte $SWAP_SIZE)
 	else
-		echo $(convert_gib_to_mib $SWAP_SIZE)
+		echo $(convert_gib_to_byte $SWAP_SIZE)
 	fi
 
 }
@@ -426,20 +446,20 @@ lv_size_bytes=$((size_2_percent_bytes > min_size_bytes ? size_2_percent_bytes : 
 
 # Convert the size to MB (LVM command requires sizes in MB)
 lv_size_mb=$((lv_size_bytes / 1000000))
-lv_size_mb=$(convert_bytes_mib lv_size_bytes)
+lv_size_mib=$(convert_bytes_mib lv_size_bytes)
 
 # Create the logical volume with the calculated size
-lvcreate -L ${lv_size_mb}M -n var_log $VG_NAME
-lvcreate -L ${lv_size_mb}M -n var_cache $VG_NAME
-lvcreate -L ${lv_size_mb}M -n var_tmp $VG_NAME
-lvcreate -L ${lv_size_mb}M -n tmp $VG_NAME
+lvcreate -L ${lv_size_bytes}b -n var_log $VG_NAME
+lvcreate -L ${lv_size_bytes}b -n var_cache $VG_NAME
+lvcreate -L ${lv_size_bytes}b -n var_tmp $VG_NAME
+lvcreate -L ${lv_size_bytes}b -n tmp $VG_NAME
 
 
 if [[ -z "$SWAP_SIZE" || "$SWAP_SIZE" == "0" ]]; then
 	echo "skipping swap partition"
 else
 	echo "making swap partition"
-	lvcreate -L "$(get_swap_size)M" -n swap_lv1 "$VG_NAME"
+	lvcreate -L "$(get_swap_size)b" -n swap_lv1 "$VG_NAME"
 fi
 
 # create logical volume named home on the volume group with the rest of the space
