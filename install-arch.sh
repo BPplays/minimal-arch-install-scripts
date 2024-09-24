@@ -31,7 +31,7 @@ convert_gb_to_mib() {
     fi
 
     size_in_gb=$1
-    echo "$(echo "(size_in_gb) * (1000000000 / 1048576)" | bc -l)"
+    echo "$(echo "($size_in_gb) * (1000000000 / 1048576)" | bc -l)"
 }
 
 get_swap_size() {
