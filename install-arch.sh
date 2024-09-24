@@ -46,6 +46,73 @@ get_swap_size() {
 
 }
 
+print_silsblk() {
+    lsblk_out=$(lsblk --bytes | numfmt --field 4 --header --to=si --format="%.2f")
+    # to_3rd_col=$(echo "$lsblk_out" | awk '{for (i = length($0); i > 0; i--) if (substr($0, i, 1) == substr($3, 1, 1) && substr($0, i, length($3)) == $3) {print i + length($3) - 1; break}}' | sort -n | tail -n 1)
+    #
+    # to_4rd_col_start=$(echo "$lsblk_out" | awk '{for (i = length($0); i > 0; i--) if (substr($0, i, 1) == substr($4, 1, 1) && substr($0, i, length($4)) == $4) {print i; break}}' | sort -n | head -n 1)
+
+
+    # base_awk=$(echo "$lsblk_out" | awk '{
+    #     # Find the end index of column 3
+    #     match($0, /[^ ]+ +[^ ]+ +[^ ]+/)
+    #     end_col3 = RSTART + RLENGTH - 1
+    #
+    #     # Find the start index of column 4
+    #     match(substr($0, end_col3 + 1), /[^ ]+/)
+    #     start_col4 = end_col3 + RSTART
+    #
+    #     print "End of column 3:", end_col3, "Start of column 4:", start_col4
+    # }')
+
+    to_3rd_col=$(echo "$lsblk_out" | awk '{
+        # Find the end index of column 3
+        match($0, /[^ ]+ +[^ ]+ +[^ ]+/)
+        end_col3 = RSTART + RLENGTH - 1
+
+        # Find the start index of column 4
+        match(substr($0, end_col3 + 1), /[^ ]+/)
+        start_col4 = end_col3 + RSTART
+
+        print end_col3
+    }' | sort -n | tail -n 1 )
+
+
+    to_4rd_col_start=$(echo "$lsblk_out" | awk '{
+        # Find the end index of column 3
+        match($0, /[^ ]+ +[^ ]+ +[^ ]+/)
+        end_col3 = RSTART + RLENGTH - 1
+
+        # Find the start index of column 4
+        match(substr($0, end_col3 + 1), /[^ ]+/)
+        start_col4 = end_col3 + RSTART
+
+        print start_col4
+    }' | sort -n | head -n 1)
+
+
+
+    # spc_rmv=$((to_3rd_col - to_4rd_col_start))
+    # num1=$((to_3rd_col + 1))
+    # num2=$((to_4rd_col_start - 2))
+    num1=$((to_3rd_col + 2))
+    num2=$to_4rd_col_start
+
+    # modified_string=$(echo "$lsblk_out" | sed "${num1},${num2}d")
+    # echo "$num1"
+    # echo "$num2"
+    # echo "$modified_string"
+
+    while IFS= read -r line; do
+      result+="${line:0:num1-1}${line:num2}\n"
+    done <<< "$lsblk_out"
+
+    # Print the result string
+    echo -e "$result"
+
+
+}
+
 # check if boot type is UEFI
 ls /sys/firmware/efi/efivars || { echo "Boot Type Is Not UEFI!; "exit 1; }
 
@@ -60,7 +127,6 @@ echo ""
 echo ""
 echo ""
 
-# lsblk
 
 
 echo "==============="
@@ -77,7 +143,8 @@ echo ""
 echo ""
 echo ""
 
-lsblk --bytes | numfmt --field 4 --header --to=si --format="%.2f"
+# lsblk --bytes | numfmt --field 4 --header --to=si --format="%.2f"
+print_silsblk
 
 echo ""
 
@@ -198,8 +265,8 @@ if [ "${PARTITIONING}" == "y" ]; then
     cfdisk "${BLOCK_DEVICE}"
 else
     sgdisk --clear \
-      -n 1:2048:+1500MB -t 1:EF00 -c 1:"Arch Linux-EFI System" \
-      -n 2:0:+2000MB -t 2:ea00 -c 2:"Arch Linux-Boot" \
+      -n 1:2048:+$(convert_gb_to_mib 1.5)MiB -t 1:EF00 -c 1:"Arch Linux-EFI System" \
+      -n 2:0:+$(convert_gb_to_mib 2)MiB -t 2:ea00 -c 2:"Arch Linux-Boot" \
       -n 3:0:+${arch_size_MIB}MiB -t 3:8309 -c 3:"Arch Linux" \
       "${BLOCK_DEVICE}"
 
@@ -209,7 +276,8 @@ else
 fi
 
 # show partitions
-lsblk --bytes | numfmt --field 4 --header --to=si --format="%.2f"
+# lsblk --bytes | numfmt --field 4 --header --to=si --format="%.2f"
+print_silsblk
 
 # read the boot/efi partition path
 echo -n "Enter the efi partition path: "
@@ -411,7 +479,8 @@ mount "${EFI_PARTITION}" /mnt/boot/efi
 
 
 # show the mounted partitions
-lsblk --bytes | numfmt --field 4 --header --to=si --format="%.2f"
+# lsblk --bytes | numfmt --field 4 --header --to=si --format="%.2f"
+print_silsblk
 
 pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 echo "pc recv"
