@@ -5,129 +5,137 @@ set -euo pipefail
 pacman -Sy  --noconfirm bc
 
 convert_bytes_gib() {
-    local bytes=$1
-    local gib=$(echo "scale=4; $bytes / (1024^3)" | bc)
+	local bytes=$1
+	local gib=$(echo "scale=4; $bytes / (1024^3)" | bc)
 
-    echo "$gib GiB"  # Return both values
+	echo "$gib GiB"  # Return both values
 }
 
 convert_bytes_mib() {
-    local bytes=$1
-    local mib=$(echo "scale=4; $bytes / (1024^2)" | bc)
+	local bytes=$1
+	local mib=$(echo "scale=4; $bytes / (1024^2)" | bc)
 
-    echo "$mib"  # Return both values
+	echo "$mib"  # Return both values
 }
 
 
 convert_bytes_gb() {
-    local bytes=$1
-    local gb=$(echo "scale=4; $bytes / (1000^3)" | bc)
+	local bytes=$1
+	local gb=$(echo "scale=4; $bytes / (1000^3)" | bc)
 
-    echo "$gb GB"  # Return both values
+	echo "$gb GB"  # Return both values
 }
 
 convert_bytes_mb() {
-    local bytes=$1
-    local mb=$(echo "scale=4; $bytes / (1000^2)" | bc)
+	local bytes=$1
+	local mb=$(echo "scale=4; $bytes / (1000^2)" | bc)
 
-    echo "$mb"  # Return both values
+	echo "$mb"  # Return both values
 }
 
 convert_gib_to_mib() {
-    local gib="$1"
-    local mib=$(echo "$gib * 1024" | bc)
-    echo "$mib"
+	local gib="$1"
+	local mib=$(echo "$gib * 1024" | bc)
+	echo "$mib"
 }
 
 convert_gb_to_mib() {
-    if [ -z "$1" ]; then
-        echo "Usage: convert_gb_to_mib <size_in_GB>"
-        return 1
-    fi
+	if [ -z "$1" ]; then
+		echo "Usage: convert_gb_to_mib <size_in_GB>"
+		return 1
+	fi
 
-    size_in_gb=$1
-    echo "$(echo "($size_in_gb) * (1000000000 / 1048576)" | bc -l)"
+	size_in_gb=$1
+	echo "$(echo "($size_in_gb) * (1000000000 / 1048576)" | bc -l)"
 }
 
 get_swap_size() {
-    # local bytes=$1
-    # local gib=$(echo "scale=4; $bytes / (1024^3)" | bc)
-    # local gb=$(echo "scale=4; $bytes / (1000^3)" | bc)
-    if [ "$ram_si" == "true" ]; then
-        echo $(convert_gb_to_mib $SWAP_SIZE)
-    else
-        echo $(convert_gib_to_mib $SWAP_SIZE)
-    fi
+	# local bytes=$1
+	# local gib=$(echo "scale=4; $bytes / (1024^3)" | bc)
+	# local gb=$(echo "scale=4; $bytes / (1000^3)" | bc)
+	if [ "$ram_si" == "true" ]; then
+		echo $(convert_gb_to_mib $SWAP_SIZE)
+	else
+		echo $(convert_gib_to_mib $SWAP_SIZE)
+	fi
 
 }
+
 
 print_silsblk() {
-    lsblk_out=$(lsblk --bytes | numfmt --field 4 --header --to=si --format="%.2f")
-    # to_3rd_col=$(echo "$lsblk_out" | awk '{for (i = length($0); i > 0; i--) if (substr($0, i, 1) == substr($3, 1, 1) && substr($0, i, length($3)) == $3) {print i + length($3) - 1; break}}' | sort -n | tail -n 1)
-    #
-    # to_4rd_col_start=$(echo "$lsblk_out" | awk '{for (i = length($0); i > 0; i--) if (substr($0, i, 1) == substr($4, 1, 1) && substr($0, i, length($4)) == $4) {print i; break}}' | sort -n | head -n 1)
+	lsblk_out=$(lsblk --bytes | numfmt --field 4 --header --to=si --format="%.2f")
+	# to_3rd_col=$(echo "$lsblk_out" | awk '{for (i = length($0); i > 0; i--) if (substr($0, i, 1) == substr($3, 1, 1) && substr($0, i, length($3)) == $3) {print i + length($3) - 1; break}}' | sort -n | tail -n 1)
+	#
+	# to_4rd_col_start=$(echo "$lsblk_out" | awk '{for (i = length($0); i > 0; i--) if (substr($0, i, 1) == substr($4, 1, 1) && substr($0, i, length($4)) == $4) {print i; break}}' | sort -n | head -n 1)
 
 
-    # base_awk=$(echo "$lsblk_out" | awk '{
-    #     # Find the end index of column 3
-    #     match($0, /[^ ]+ +[^ ]+ +[^ ]+/)
-    #     end_col3 = RSTART + RLENGTH - 1
-    #
-    #     # Find the start index of column 4
-    #     match(substr($0, end_col3 + 1), /[^ ]+/)
-    #     start_col4 = end_col3 + RSTART
-    #
-    #     print "End of column 3:", end_col3, "Start of column 4:", start_col4
-    # }')
+	# base_awk=$(echo "$lsblk_out" | awk '{
+	#     # Find the end index of column 3
+	#     match($0, /[^ ]+ +[^ ]+ +[^ ]+/)
+	#     end_col3 = RSTART + RLENGTH - 1
+	#
+	#     # Find the start index of column 4
+	#     match(substr($0, end_col3 + 1), /[^ ]+/)
+	#     start_col4 = end_col3 + RSTART
+	#
+	#     print "End of column 3:", end_col3, "Start of column 4:", start_col4
+	# }')
 
-    to_3rd_col=$(echo "$lsblk_out" | awk '{
-        # Find the end index of column 3
-        match($0, /[^ ]+ +[^ ]+ +[^ ]+/)
-        end_col3 = RSTART + RLENGTH - 1
+	to_3rd_col=$(echo "$lsblk_out" | awk '{
+		# Find the end index of column 3
+		match($0, /[^ ]+ +[^ ]+ +[^ ]+/)
+		end_col3 = RSTART + RLENGTH - 1
 
-        # Find the start index of column 4
-        match(substr($0, end_col3 + 1), /[^ ]+/)
-        start_col4 = end_col3 + RSTART
+		# Find the start index of column 4
+		match(substr($0, end_col3 + 1), /[^ ]+/)
+		start_col4 = end_col3 + RSTART
 
-        print end_col3
-    }' | sort -n | tail -n 1 )
-
-
-    to_4rd_col_start=$(echo "$lsblk_out" | awk '{
-        # Find the end index of column 3
-        match($0, /[^ ]+ +[^ ]+ +[^ ]+/)
-        end_col3 = RSTART + RLENGTH - 1
-
-        # Find the start index of column 4
-        match(substr($0, end_col3 + 1), /[^ ]+/)
-        start_col4 = end_col3 + RSTART
-
-        print start_col4
-    }' | sort -n | head -n 1)
+		print end_col3
+	}' | sort -n | tail -n 1 )
 
 
+	to_4rd_col_start=$(echo "$lsblk_out" | awk '{
+		# Find the end index of column 3
+		match($0, /[^ ]+ +[^ ]+ +[^ ]+/)
+		end_col3 = RSTART + RLENGTH - 1
 
-    # spc_rmv=$((to_3rd_col - to_4rd_col_start))
-    # num1=$((to_3rd_col + 1))
-    # num2=$((to_4rd_col_start - 2))
-    num1=$((to_3rd_col + 2))
-    num2=$to_4rd_col_start
+		# Find the start index of column 4
+		match(substr($0, end_col3 + 1), /[^ ]+/)
+		start_col4 = end_col3 + RSTART
 
-    # modified_string=$(echo "$lsblk_out" | sed "${num1},${num2}d")
-    # echo "$num1"
-    # echo "$num2"
-    # echo "$modified_string"
+		print start_col4
+	}' | sort -n | head -n 1)
 
-    result=""
-    while IFS= read -r line; do
-      result+="${line:0:num1-1}${line:num2}\n"
-    done <<< "$lsblk_out"
 
-    # Print the result string
-    echo -e "$result"
+
+	# spc_rmv=$((to_3rd_col - to_4rd_col_start))
+	# num1=$((to_3rd_col + 1))
+	# num2=$((to_4rd_col_start - 2))
+	num1=$((to_3rd_col + 2))
+	num2=$to_4rd_col_start
+
+	# modified_string=$(echo "$lsblk_out" | sed "${num1},${num2}d")
+	# echo "$num1"
+	# echo "$num2"
+	# echo "$modified_string"
+
+	result=""
+	first_line=true
+	while IFS= read -r line; do
+		if [ "$first_line" = true ]; then
+			first_line=false
+		else
+			result+="\n"
+		fi
+		result+="${line:0:num1-1}${line:num2}"
+	done <<< "$lsblk_out"
+
+	# Print the result string
+	echo -e "$result"
 
 
 }
+
 
 # check if boot type is UEFI
 ls /sys/firmware/efi/efivars || { echo "Boot Type Is Not UEFI!; "exit 1; }
@@ -181,19 +189,19 @@ response=${response:-N}  # Default to 'Y' if no input
 
 echo ""
 if [[ "$response" =~ ^[Yy]$ ]]; then
-    ram_si=true
-    echo "RAM SIZE $ram_gb"
+	ram_si=true
+	echo "RAM SIZE $ram_gb"
 
-    echo -n "Enter swap size in GB (nothing or 0 means no swap):"
+	echo -n "Enter swap size in GB (nothing or 0 means no swap):"
 
-    read -r SWAP_SIZE
+	read -r SWAP_SIZE
 
 else
-    ram_si=false
-    echo "RAM SIZE $ram_gib"
-    echo -n "Enter swap size in GiB (nothing or 0 means no swap):"
+	ram_si=false
+	echo "RAM SIZE $ram_gib"
+	echo -n "Enter swap size in GiB (nothing or 0 means no swap):"
 
-    read -r SWAP_SIZE
+	read -r SWAP_SIZE
 fi
 
 
@@ -217,12 +225,12 @@ read -e -p "Is this correct? (Y/n): " response
 response=${response:-Y}  # Default to 'Y' if no input
 
 if [[ "$response" =~ ^[Yy]$ ]]; then
-    # Set the detected timezone
-    final_tz="$auto_tz"
+	# Set the detected timezone
+	final_tz="$auto_tz"
 else
-    # Prompt user to enter the correct timezone
-    read -p "Please enter your timezone (e.g., 'Asia/Tokyo', 'America/Los_Angeles', 'America/New_York'): " final_tz
-    # echo "Setting timezone to $final_tz..."
+	# Prompt user to enter the correct timezone
+	read -p "Please enter your timezone (e.g., 'Asia/Tokyo', 'America/Los_Angeles', 'America/New_York'): " final_tz
+	# echo "Setting timezone to $final_tz..."
 fi
 
 # echo -n "Enter Time Zone: "
@@ -235,43 +243,43 @@ read -r HOSTNAME_t
 export HOSTNAME="$HOSTNAME_t"
 
 while true; do
-    # Prompt for the password
-    read -s -p "Enter root password: " password
-    echo
+	# Prompt for the password
+	read -s -p "Enter root password: " password
+	echo
 
-    # Prompt for the confirmation
-    read -s -p "Confirm password: " confirm_password
-    echo
+	# Prompt for the confirmation
+	read -s -p "Confirm password: " confirm_password
+	echo
 
-    # Check if passwords match
-    if [ "$password" == "$confirm_password" ]; then
-        # Export the variable
-        export ROOT_PASS="$password"
+	# Check if passwords match
+	if [ "$password" == "$confirm_password" ]; then
+		# Export the variable
+		export ROOT_PASS="$password"
 
-        break
-    else
-        echo "Passwords do not match. Please try again."
-    fi
+		break
+	else
+		echo "Passwords do not match. Please try again."
+	fi
 done
 
 while true; do
-    # Prompt for the password
-    read -s -p "Enter local_admin password: " password
-    echo
+	# Prompt for the password
+	read -s -p "Enter local_admin password: " password
+	echo
 
-    # Prompt for the confirmation
-    read -s -p "Confirm password: " confirm_password
-    echo
+	# Prompt for the confirmation
+	read -s -p "Confirm password: " confirm_password
+	echo
 
-    # Check if passwords match
-    if [ "$password" == "$confirm_password" ]; then
-        # Export the variable
-        export LOCAL_ADMIN_PASS="$password"
+	# Check if passwords match
+	if [ "$password" == "$confirm_password" ]; then
+		# Export the variable
+		export LOCAL_ADMIN_PASS="$password"
 
-        break
-    else
-        echo "Passwords do not match. Please try again."
-    fi
+		break
+	else
+		echo "Passwords do not match. Please try again."
+	fi
 done
 
 arch_size_GIB=$(echo "$arch_size_gb * $gb_to_gib" | bc)
@@ -279,18 +287,18 @@ arch_size_MIB=$(convert_gb_to_mib $arch_size_gb)
 
 # if the user wants to create [one] LUKS partition manually with cfdisk (in case there are already other OS's installed)
 if [ "${PARTITIONING}" == "y" ]; then
-    # partition the block device with cfdisk
-    cfdisk "${BLOCK_DEVICE}"
+	# partition the block device with cfdisk
+	cfdisk "${BLOCK_DEVICE}"
 else
-    sgdisk --clear \
-      -n 1:2048:+$(convert_gb_to_mib 1.5)MiB -t 1:EF00 -c 1:"Arch Linux-EFI System" \
-      -n 2:0:+$(convert_gb_to_mib 2)MiB -t 2:ea00 -c 2:"Arch Linux-Boot" \
-      -n 3:0:+${arch_size_MIB}MiB -t 3:8309 -c 3:"Arch Linux" \
-      "${BLOCK_DEVICE}"
+	sgdisk --clear \
+		-n 1:2048:+$(convert_gb_to_mib 1.5)MiB -t 1:EF00 -c 1:"Arch Linux-EFI System" \
+		-n 2:0:+$(convert_gb_to_mib 2)MiB -t 2:ea00 -c 2:"Arch Linux-Boot" \
+		-n 3:0:+${arch_size_MIB}MiB -t 3:8309 -c 3:"Arch Linux" \
+		"${BLOCK_DEVICE}"
 
-    # format EFI partition
-    mkfs.fat -F32 "${BLOCK_DEVICE}p1"
-    mkfs.ext4 -m 2 "${BLOCK_DEVICE}p2"
+	# format EFI partition
+	mkfs.fat -F32 "${BLOCK_DEVICE}p1"
+	mkfs.ext4 -m 2 "${BLOCK_DEVICE}p2"
 fi
 
 # show partitions
@@ -315,38 +323,38 @@ set +euo pipefail
 # Define your command in a loop
 while true; do
 
-    while true; do
-        # Prompt for the password
-        read -s -p "Enter luks encryption password: " password
-        echo
+	while true; do
+		# Prompt for the password
+		read -s -p "Enter luks encryption password: " password
+		echo
 
-        # Prompt for the confirmation
-        read -s -p "Confirm password: " confirm_password
-        echo
+		# Prompt for the confirmation
+		read -s -p "Confirm password: " confirm_password
+		echo
 
-        # Check if passwords match
-        if [ "$password" == "$confirm_password" ]; then
-            # Export the variable
-            export LUKS_PASS="$password"
+		# Check if passwords match
+		if [ "$password" == "$confirm_password" ]; then
+			# Export the variable
+			export LUKS_PASS="$password"
 
-            break
-        else
-            echo "Passwords do not match. Please try again."
-        fi
-    done
-
-
+			break
+		else
+			echo "Passwords do not match. Please try again."
+		fi
+	done
 
 
-    echo -n "$LUKS_PASS" | cryptsetup luksFormat "${NEW_PARTITION}" --key-file=- --cipher aes-xts-plain64 --hash sha256 --key-size 512
 
-    # Break the loop if the command succeeds (exit code 0)
-    if [[ $? -eq 0 ]]; then
-        break
-    fi
 
-    # echo "Command failed. Retrying..."
-    # sleep 2  # Optional: wait for 2 seconds before retrying
+	echo -n "$LUKS_PASS" | cryptsetup luksFormat "${NEW_PARTITION}" --key-file=- --cipher aes-xts-plain64 --hash sha256 --key-size 512
+
+	# Break the loop if the command succeeds (exit code 0)
+	if [[ $? -eq 0 ]]; then
+		break
+	fi
+
+	# echo "Command failed. Retrying..."
+	# sleep 2  # Optional: wait for 2 seconds before retrying
 done
 
 echo ""
@@ -377,16 +385,16 @@ set -euo pipefail
 
 set +euo pipefail
 while true; do
-    echo -n "$LUKS_PASS" | cryptsetup open "${NEW_PARTITION}" cryptlvm --key-file=-
+	echo -n "$LUKS_PASS" | cryptsetup open "${NEW_PARTITION}" cryptlvm --key-file=-
 
-    # Break the loop if the command succeeds (exit code 0)
-    if [[ $? -eq 0 ]]; then
-        break
-    fi
-    break
+	# Break the loop if the command succeeds (exit code 0)
+	if [[ $? -eq 0 ]]; then
+		break
+	fi
+	break
 
-    # echo "Command failed. Retrying..."
-    # sleep 2  # Optional: wait for 2 seconds before retrying
+	# echo "Command failed. Retrying..."
+	# sleep 2  # Optional: wait for 2 seconds before retrying
 done
 set -euo pipefail
 
@@ -424,10 +432,10 @@ lvcreate -L ${lv_size_mb}M -n tmp $VG_NAME
 
 
 if [[ -z "$SWAP_SIZE" || "$SWAP_SIZE" == "0" ]]; then
-    echo "skipping swap partition"
+	echo "skipping swap partition"
 else
-    echo "making swap partition"
-    lvcreate -L "$(get_swap_size)M" -n swap_lv1 "$VG_NAME"
+	echo "making swap partition"
+	lvcreate -L "$(get_swap_size)M" -n swap_lv1 "$VG_NAME"
 fi
 
 # create logical volume named home on the volume group with the rest of the space
@@ -444,10 +452,10 @@ tune2fs -O ^has_journal /dev/vg1/tmp
 
 
 if [[ -z "$SWAP_SIZE" || "$SWAP_SIZE" == "0" ]]; then
-    sleep 0
+	sleep 0
 else
-    mkswap /dev/$VG_NAME/swap_lv1
-    swapon /dev/$VG_NAME/swap_lv1
+	mkswap /dev/$VG_NAME/swap_lv1
+	swapon /dev/$VG_NAME/swap_lv1
 fi
 
 # mount the root partition
@@ -580,9 +588,9 @@ sudo chmod 755 /mnt/usr/local/sbin/aur_freeipa_get_key.sh
 dos2unix /mnt/usr/local/sbin/aur_freeipa_get_key.sh
 
 if [ -f "./post_install.sh" ]; then
-  # If it exists, move it to ./Post_install.sh
-  mv -f ./post_install.sh ./Post_install.sh
-  echo "File renamed to ./Post_install.sh"
+	# If it exists, move it to ./Post_install.sh
+	mv -f ./post_install.sh ./Post_install.sh
+	echo "File renamed to ./Post_install.sh"
 fi
 
 cp Post_install.sh /mnt/usr/local/bin/
@@ -633,9 +641,9 @@ set +euo pipefail
 mkdir -p /mnt/boot/efi/EFI/refind/themes
 git clone https://github.com/BPplays/refind-catp.git /mnt/boot/efi/EFI/refind/themes/catppuccin
 if [ -f /mnt/boot/efi/EFI/refind/themes/catppuccin/mocha.conf ]; then
-    echo "include themes/catppuccin/mocha.conf" | sudo tee -a /mnt/boot/efi/EFI/refind/refind.conf
+	echo "include themes/catppuccin/mocha.conf" | sudo tee -a /mnt/boot/efi/EFI/refind/refind.conf
 else
-    echo "The file /mnt/boot/efi/EFI/refind/themes/catppuccin/mocha.conf does not exist."
+	echo "The file /mnt/boot/efi/EFI/refind/themes/catppuccin/mocha.conf does not exist."
 fi
 set -euo pipefail
 
