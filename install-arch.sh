@@ -759,6 +759,22 @@ set -euo pipefail
 # umount /mnt/home
 # umount /mnt/boot
 # umount /mnt
+echo ""
+echo ""
+echo ""
+
+set +euo pipefail
+
+echo "fstab:"
+cat /mnt/etc/fstab
+
+echo ""
+echo ""
+echo ""
+
+echo "final partition layout:"
+print_silsblk
+
 
 echo ""
 echo ""
@@ -775,3 +791,7 @@ echo "================================"
 echo "================================"
 
 echo ""
+
+set -euo pipefail
+
+
