@@ -37,7 +37,8 @@ pacman -Syu --noconfirm aria2
 pacman -Syu --noconfirm chaotic-aur/pm2ml chaotic-aur/python3-xcgf
 pacman -Syu --noconfirm chaotic-aur/powerpill
 pacman -Syu --noconfirm chaotic-aur/yay
-TMPDIR=$(mktemp -d)
+
+TMPDIR=$(mktemp --tmpdir="/tmp" -d "fipaak_XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX")
 git clone https://aur.archlinux.org/freeipa.git $TMPDIR
 gpg --import $TMPDIR/keys/pgp/*asc
 rm -fr $TMPDIR
