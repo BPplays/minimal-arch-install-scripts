@@ -1,6 +1,9 @@
 #!/bin/bash
 
 
+sudo pacman -Syu --noconfirm
+
+
 TMPDIR=$(mktemp -d)
 git clone https://aur.archlinux.org/freeipa.git $TMPDIR
 gpg --import $TMPDIR/keys/pgp/*asc
