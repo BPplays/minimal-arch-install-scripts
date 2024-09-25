@@ -599,7 +599,7 @@ pacman -Sy --noconfirm archlinux-keyring
 # install necessary packages
 # pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode crudini cryptsetup
 pacstrap -K /mnt base base-devel linux linux-headers linux-docs linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup amd-ucode intel-ucode iw wireless-regdb fprintd openssh dos2unix pipewire pipewire-audio pipewire-pulse pipewire-alsa wireplumber pipewire-jack lzop btrfs-progs mesa vulkan-radeon libva-mesa-driver realtime-privileges rtkit pipewire-docs bluez bluez-utils
-pacstrap -K /mnt linux-lts linux-lts-headers linux-lts-docs linux-zen linux-zen-docs linux-zen-headers linux-hardened linux-hardened-headers linux-hardened-docs linux-rt linux-rt-headers linux-rt-docs linux-rt-lts linux-rt-lts-headers linux-rt-lts-docs
+# pacstrap -K /mnt linux-lts linux-lts-headers linux-lts-docs linux-zen linux-zen-docs linux-zen-headers linux-hardened linux-hardened-headers linux-hardened-docs linux-rt linux-rt-headers linux-rt-docs linux-rt-lts linux-rt-lts-headers linux-rt-lts-docs
 
 # refind-install hook
 cat <<EOF >/etc/pacman.d/hooks/refind.hook
