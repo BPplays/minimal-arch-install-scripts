@@ -513,7 +513,7 @@ umount /mnt
 
 mount -o subvol=@ /dev/vg1/root /mnt
 mkdir -p /mnt/home
-mount -o subvol=@ /dev/vg1/root /mnt/home
+mount -o subvol=@home /dev/vg1/root /mnt/home
 
 
 mkdir -p /mnt/var/log
