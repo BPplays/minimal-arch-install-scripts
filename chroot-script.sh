@@ -116,6 +116,8 @@ systemctl enable NetworkManager
 
 
 set +euo pipefail
+
+systemctl sshd NetworkManager
 # Define the username and home directory
 USERNAME="local_admin"
 HOME_DIR="/local-home/$USERNAME"
