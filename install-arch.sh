@@ -8,7 +8,7 @@ convert_bytes_gib() {
 	local bytes=$1
 	local gib=$(echo "$bytes / (1024^3)" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')
 
-	echo "$gib GiB"  # Return both values
+	echo "$gib"  # Return both values
 }
 
 convert_bytes_mib() {
@@ -23,7 +23,7 @@ convert_bytes_gb() {
 	local bytes=$1
 	local gb=$(echo "$bytes / (1000^3)" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')
 
-	echo "$gb GB"  # Return both values
+	echo "$gb"  # Return both values
 }
 
 convert_bytes_mb() {
@@ -229,22 +229,25 @@ read -r PARTITIONING
 ram_bytes=$(free --bytes | grep 'Mem:' | awk '{print $2}')
 ram_gb=$(convert_bytes_gb $ram_bytes)
 ram_gib=$(convert_bytes_gib $ram_bytes)
+echo ""
+echo "RAM size: $ram_gb GB, $ram_gib GiB"
 read -p "would you like to use si decimal prefixes for RAM and swap over base-2 prefixes (GB is si, GiB is base-2. base-2 is more standard for RAM and the default here)? [y/N]: " response
 response=${response:-N}  # Default to 'Y' if no input
 
 echo ""
 if [[ "$response" =~ ^[Yy]$ ]]; then
 	ram_si=true
-	echo "RAM SIZE $ram_gb"
 
-	echo -n "Enter swap size in GB (nothing or 0 means no swap):"
+	echo "RAM size $ram_gb GB"
+	echo -n "Enter swap size in GB (nothing or 0 means no swap): "
 
 	read -r SWAP_SIZE
 
 else
 	ram_si=false
-	echo "RAM SIZE $ram_gib"
-	echo -n "Enter swap size in GiB (nothing or 0 means no swap):"
+
+	echo "RAM size $ram_gib GiB"
+	echo -n "Enter swap size in GiB (nothing or 0 means no swap): "
 
 	read -r SWAP_SIZE
 fi
