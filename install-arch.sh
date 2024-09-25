@@ -542,8 +542,14 @@ mkdir -p /mnt/tmp
 mkdir -p /mnt/var/tmp
 
 
-mount -o subvol=@home /dev/vg1/root /mnt/home
 mount -o subvol=@var /dev/vg1/root /mnt/var
+
+mkdir -p /mnt/home
+mkdir -p /mnt/var/log
+mkdir -p /mnt/var/cache
+mkdir -p /mnt/tmp
+mkdir -p /mnt/var/tmp
+mount -o subvol=@home /dev/vg1/root /mnt/home
 
 mount -o subvol=@ /dev/vg1/var_log /mnt/var/log
 
@@ -752,5 +758,14 @@ set -euo pipefail
 # umount /mnt/boot
 # umount /mnt
 
+echo ""
 
-echo "finished installing arch"
+echo "================================"
+echo "================================"
+echo "================================"
+echo "===                          ==="
+echo "=== finished installing arch ==="
+echo "===                          ==="
+echo "================================"
+echo "================================"
+echo "================================"
