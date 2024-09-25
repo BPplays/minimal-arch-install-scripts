@@ -4,6 +4,15 @@ set -euo pipefail
 
 pacman -Sy  --noconfirm bc btrfs-progs
 
+
+convert_to_floor_512mult_int() {
+	local in=$1
+	local out=$(echo "scale=0; $in - ( $in % 512 )" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')
+
+	echo "$out"
+}
+
+
 convert_bytes_gib() {
 	local bytes=$1
 	local gib=$(echo "$bytes / (1024^3)" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')
@@ -16,6 +25,14 @@ convert_bytes_mib() {
 	local mib=$(echo "$bytes / (1024^2)" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')
 
 	echo "$mib"  # Return both values
+}
+
+
+convert_bytes_kib() {
+	local bytes=$1
+	local kib=$(echo "$bytes / 1024" | bc -l | sed -E -e 's!(\.[0-9]*[1-9])0*$!\1!' -e 's!(\.0*)$!!')
+
+	echo "$kib"  # Return both values
 }
 
 
@@ -95,9 +112,9 @@ get_swap_size() {
 	# local gib=$(echo "scale=4; $bytes / (1024^3)" | bc)
 	# local gb=$(echo "scale=4; $bytes / (1000^3)" | bc)
 	if [ "$ram_si" == "true" ]; then
-		echo $(convert_gb_to_byte $SWAP_SIZE)
+		echo $(convert_to_floor_512mult_int $(convert_gb_to_byte $SWAP_SIZE))
 	else
-		echo $(convert_gib_to_byte $SWAP_SIZE)
+		echo $(convert_to_floor_512mult_int $(convert_gib_to_byte $SWAP_SIZE))
 	fi
 
 }
@@ -468,13 +485,15 @@ lv_size_bytes=$((size_2_percent_bytes > min_size_bytes ? size_2_percent_bytes : 
 
 # Convert the size to MB (LVM command requires sizes in MB)
 lv_size_mb=$((lv_size_bytes / 1000000))
-lv_size_mib=$(convert_bytes_mib lv_size_bytes)
+lv_size_mib=$(convert_bytes_mib $lv_size_bytes)
+lv_size_kib=$(convert_bytes_kib $lv_size_bytes)
+lv_size_bytes_512=$(convert_to_floor_512mult_int $lv_size_bytes)
 
 # Create the logical volume with the calculated size
-lvcreate -L ${lv_size_bytes}b -n var_log $VG_NAME
-lvcreate -L ${lv_size_bytes}b -n var_cache $VG_NAME
-lvcreate -L ${lv_size_bytes}b -n var_tmp $VG_NAME
-lvcreate -L ${lv_size_bytes}b -n tmp $VG_NAME
+lvcreate -L ${lv_size_bytes_512}b -n var_log $VG_NAME
+lvcreate -L ${lv_size_bytes_512}b -n var_cache $VG_NAME
+lvcreate -L ${lv_size_bytes_512}b -n var_tmp $VG_NAME
+lvcreate -L ${lv_size_bytes_512}b -n tmp $VG_NAME
 
 
 if [[ -z "$SWAP_SIZE" || "$SWAP_SIZE" == "0" ]]; then
