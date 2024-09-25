@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-pacman -Sy  --noconfirm bc
+pacman -Sy  --noconfirm bc btrfs-progs
 
 convert_bytes_gib() {
 	local bytes=$1
@@ -507,6 +507,13 @@ fi
 
 # mount the root partition
 mount /dev/vg1/root /mnt
+btrfs subvolume create /mnt/@
+btrfs subvolume create /mnt/@home
+umount /mnt
+
+mount -o subvol=@ /dev/vg1/root /mnt
+mkdir -p /mnt/home
+mount -o subvol=@ /dev/vg1/root /mnt/home
 
 
 mkdir -p /mnt/var/log
@@ -514,10 +521,23 @@ mkdir -p /mnt/var/cache
 mkdir -p /mnt/tmp
 mkdir -p /mnt/var/tmp
 
-mount /dev/vg1/var_log /mnt/var/log
-mount /dev/vg1/var_cache /mnt/var/cache
+mount /dev/vg1/var_log /mnt/
+btrfs subvolume create /mnt/@
+umount /mnt
+mount -o subvol=@ /dev/vg1/var_log /mnt/var/log
+
+mount /dev/vg1/var_cache /mnt
+btrfs subvolume create /mnt/@
+umount /mnt
+mount -o subvol=@ /dev/vg1/var_cache /mnt/var/cache
+
+mount /dev/vg1/var_tmp /mnt
+btrfs subvolume create /mnt/@
+umount /mnt
+mount -o subvol=@ /dev/vg1/var_tmp /mnt/var/tmp
+
+
 mount /dev/vg1/tmp /mnt/tmp
-mount /dev/vg1/var_tmp /mnt/var/tmp
 
 echo "mounted all dirs"
 # create home directory
@@ -578,7 +598,7 @@ pacman -Sy --noconfirm archlinux-keyring
 
 # install necessary packages
 # pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode crudini cryptsetup
-pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup amd-ucode intel-ucode iw wireless-regdb fprintd openssh dos2unix pipewire pipewire-audio pipewire-pulse pipewire-alsa wireplumber pipewire-jack lzop
+pacstrap -K /mnt base base-devel linux linux-headers linux-docs linux-lts linux-lts-headers linux-lts-docs linux-zen linux-zen-docs linux-zen-headers linux-hardened linux-hardened-headers linux-hardened-docs linux-rt linux-rt-headers linux-rt-docs linux-rt-lts linux-rt-lts-headers linux-rt-lts-docs linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup amd-ucode intel-ucode iw wireless-regdb fprintd openssh dos2unix pipewire pipewire-audio pipewire-pulse pipewire-alsa wireplumber pipewire-jack lzop btrfs-progs mesa vulkan-radeon libva-mesa-driver
 
 # refind-install hook
 cat <<EOF >/etc/pacman.d/hooks/refind.hook
@@ -667,7 +687,7 @@ echo "luks uuid $LUKS_UUID"
 
 # prepare boot options for refind
 BOOT_OPTIONS="rd.luks.uuid=${LUKS_UUID} cryptdevice=UUID=${LUKS_UUID}:cryptlvm:allow-discards root=/dev/vg1/root"
-RW_LOGLEVEL_OPTIONS="rw loglevel=3"
+RW_LOGLEVEL_OPTIONS="rw loglevel=4"
 # INITRD_OPTIONS="initrd=amd-ucode.img initrd=initramfs-%v.img"
 # INITRD_OPTIONS="add_efi_memmap initrd=intel-ucode.img initrd=amd-ucode.img initrd=initramfs-%v.img"
 INITRD_OPTIONS="add_efi_memmap"
