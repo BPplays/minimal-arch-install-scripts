@@ -64,4 +64,5 @@ EOF
 
 sudo systemctl start sshd
 sudo systemctl enable sshd
+sudo systemctl restart sshd
 
