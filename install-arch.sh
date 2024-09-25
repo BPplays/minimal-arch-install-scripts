@@ -198,15 +198,15 @@ echo ""
 
 
 
-echo "==============="
-echo "==============="
-echo "==============="
-echo ""
-echo "ALL LSBLK RESULTS ARE CONVERTED TO SI PREFIXES GB INSTEAD OF DEFAULT GIB"
-echo ""
-echo "==============="
-echo "==============="
-echo "==============="
+echo "============================================================================================"
+echo "============================================================================================"
+echo "============================================================================================"
+echo "===                                                                                      ==="
+echo "=== ALL LSBLK RESULTS ARE CONVERTED TO SI PREFIXES, E.G. GB INSTEAD OF LSBLK DEFAULT GIB ==="
+echo "===                                                                                      ==="
+echo "============================================================================================"
+echo "============================================================================================"
+echo "============================================================================================"
 echo ""
 echo ""
 echo ""
@@ -375,7 +375,7 @@ while true; do
 
 	while true; do
 		# Prompt for the password
-		read -s -p "Enter luks encryption password: " password
+		read -s -p "Enter luks disk encryption password: " password
 		echo
 
 		# Prompt for the confirmation
