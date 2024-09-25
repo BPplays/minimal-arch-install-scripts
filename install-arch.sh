@@ -549,6 +549,8 @@ mkdir -p /mnt/var/log
 mkdir -p /mnt/var/cache
 mkdir -p /mnt/tmp
 mkdir -p /mnt/var/tmp
+
+
 mount -o subvol=@home /dev/vg1/root /mnt/home
 
 mount -o subvol=@ /dev/vg1/var_log /mnt/var/log
