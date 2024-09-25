@@ -97,6 +97,9 @@ mkinitcpio -p linux
 echo "mkinitcpio -p linux"
 mkinitcpio -p linux-lts
 echo "mkinitcpio -p linux-lts"
+
+mkinitcpio -p linux-zen
+mkinitcpio -p linux-rt
 set -euo pipefail
 
 # install and configure refind

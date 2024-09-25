@@ -509,6 +509,7 @@ fi
 mount /dev/vg1/root /mnt
 btrfs subvolume create /mnt/@
 btrfs subvolume create /mnt/@home
+btrfs subvolume create /mnt/@var
 umount /mnt
 
 
@@ -539,6 +540,7 @@ mkdir -p /mnt/var/tmp
 
 
 mount -o subvol=@home /dev/vg1/root /mnt/home
+mount -o subvol=@var /dev/vg1/root /mnt/var
 
 mount -o subvol=@ /dev/vg1/var_log /mnt/var/log
 
@@ -547,7 +549,7 @@ mount -o subvol=@ /dev/vg1/var_cache /mnt/var/cache
 mount -o subvol=@ /dev/vg1/var_tmp /mnt/var/tmp
 
 
-mount /dev/vg1/tmp /mnt/tmp
+mount -o noatime /dev/vg1/tmp /mnt/tmp
 
 echo "mounted all dirs"
 # create home directory
@@ -609,7 +611,9 @@ pacman -Sy --noconfirm archlinux-keyring
 # install necessary packages
 # pacstrap -K /mnt base base-devel linux linux-headers linux-lts linux-lts-headers linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd amd-ucode crudini cryptsetup
 pacstrap -K /mnt base base-devel linux linux-headers linux-docs linux-firmware lvm2 vim git networkmanager refind os-prober efibootmgr iwd crudini cryptsetup amd-ucode intel-ucode iw wireless-regdb fprintd openssh dos2unix pipewire pipewire-audio pipewire-pulse pipewire-alsa wireplumber pipewire-jack lzop btrfs-progs mesa vulkan-radeon libva-mesa-driver realtime-privileges rtkit pipewire-docs bluez bluez-utils
-# pacstrap -K /mnt linux-lts linux-lts-headers linux-lts-docs linux-zen linux-zen-docs linux-zen-headers linux-hardened linux-hardened-headers linux-hardened-docs linux-rt linux-rt-headers linux-rt-docs linux-rt-lts linux-rt-lts-headers linux-rt-lts-docs
+pacstrap -K /mnt linux-lts linux-lts-headers linux-lts-docs linux-zen linux-zen-docs linux-zen-headers linux-rt linux-rt-headers linux-rt-docs
+# extra kernels
+# pacstrap -K /mnt linux-hardened linux-hardened-headers linux-hardened-docs linux-rt-lts linux-rt-lts-headers linux-rt-lts-docs
 
 # refind-install hook
 cat <<EOF >/etc/pacman.d/hooks/refind.hook
