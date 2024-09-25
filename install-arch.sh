@@ -511,29 +511,39 @@ btrfs subvolume create /mnt/@
 btrfs subvolume create /mnt/@home
 umount /mnt
 
+
+mount /dev/vg1/var_log /mnt/
+btrfs subvolume create /mnt/@
+umount /mnt
+
+
+mount /dev/vg1/var_cache /mnt
+btrfs subvolume create /mnt/@
+umount /mnt
+
+
+
+mount /dev/vg1/var_tmp /mnt
+btrfs subvolume create /mnt/@
+umount /mnt
+
+
+
 mount -o subvol=@ /dev/vg1/root /mnt
+
 mkdir -p /mnt/home
-mount -o subvol=@home /dev/vg1/root /mnt/home
-
-
 mkdir -p /mnt/var/log
 mkdir -p /mnt/var/cache
 mkdir -p /mnt/tmp
 mkdir -p /mnt/var/tmp
 
-mount /dev/vg1/var_log /mnt/
-btrfs subvolume create /mnt/@
-umount /mnt
+
+mount -o subvol=@home /dev/vg1/root /mnt/home
+
 mount -o subvol=@ /dev/vg1/var_log /mnt/var/log
 
-mount /dev/vg1/var_cache /mnt
-btrfs subvolume create /mnt/@
-umount /mnt
 mount -o subvol=@ /dev/vg1/var_cache /mnt/var/cache
 
-mount /dev/vg1/var_tmp /mnt
-btrfs subvolume create /mnt/@
-umount /mnt
 mount -o subvol=@ /dev/vg1/var_tmp /mnt/var/tmp
 
 
@@ -619,6 +629,8 @@ echo "refind-install hook"
 
 # Generate an fstab config
 genfstab -U /mnt > /mnt/etc/fstab
+fstab_no_fsck_tmp=$(awk '$2 == "/tmp" { $6 = "0" }1' /mnt/etc/fstab)
+echo "$fstab_no_fsck_tmp" > /mnt/etc/fstab
 
 echo "genfstab"
 
