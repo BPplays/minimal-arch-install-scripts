@@ -759,6 +759,8 @@ set -euo pipefail
 # umount /mnt
 
 echo ""
+echo ""
+echo ""
 
 echo "================================"
 echo "================================"
