@@ -516,6 +516,7 @@ mkfs.ext4 -m 2 /dev/vg1/tmp
 tune2fs -O ^has_journal /dev/vg1/tmp
 
 
+#! look into this might cause swap errors and crashes on fresh install?
 if [[ -z "$SWAP_SIZE" || "$SWAP_SIZE" == "0" ]]; then
 	sleep 0
 else
