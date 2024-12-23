@@ -1,17 +1,23 @@
 #!/bin/bash
 
 
-sudo pacman -Syu --noconfirm
+sudo pacman -Syu --noconfirm ruby ruby-stdlib
 
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/BPplays/homebrew-install/master/install.sh)"
+export PATH=$PATH:/opt/linuxbrew/bin
 
-TMPDIR=$(mktemp -d)
-git clone https://aur.archlinux.org/freeipa.git $TMPDIR
-gpg --import $TMPDIR/keys/pgp/*asc
-rm -fr $TMPDIR
-yay -Syu
+brew_bin="/opt/linuxbrew/Homebrew/bin/brew"
+$brew_bin tap freeipa/freeipa
+$brew_bin install freeipa-client
 
-yay -Sua --sudoloop --noconfirm --aur libsepol
-yay -Sua --sudoloop --noconfirm --aur freeipa-client
+# TMPDIR=$(mktemp -d)
+# git clone https://aur.archlinux.org/freeipa.git $TMPDIR
+# gpg --import $TMPDIR/keys/pgp/*asc
+# rm -fr $TMPDIR
+# yay -Syu
+#
+# yay -Sua --sudoloop --noconfirm --aur libsepol
+# yay -Sua --sudoloop --noconfirm --aur freeipa-client
 
 
 while true; do
