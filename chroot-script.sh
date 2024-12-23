@@ -103,11 +103,11 @@ set +euo pipefail
 # mkinitcpio -P
 mkinitcpio -p linux
 echo "mkinitcpio -p linux"
-mkinitcpio -p linux-lts
-echo "mkinitcpio -p linux-lts"
-
-mkinitcpio -p linux-zen
-mkinitcpio -p linux-rt
+# mkinitcpio -p linux-lts
+# echo "mkinitcpio -p linux-lts"
+#
+# mkinitcpio -p linux-zen
+# mkinitcpio -p linux-rt
 set -euo pipefail
 
 # install and configure refind
@@ -120,11 +120,11 @@ echo "refind installed"
 iw reg set US
 
 systemctl enable NetworkManager
-
+systemctl enable sshd
 
 set +euo pipefail
 
-systemctl sshd NetworkManager
+systemctl start NetworkManager
 # Define the username and home directory
 USERNAME="local_admin"
 HOME_DIR="/local-home/$USERNAME"
