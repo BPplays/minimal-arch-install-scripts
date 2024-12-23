@@ -604,7 +604,7 @@ mount -o relatime /dev/vg1/var_cache /mnt/var/cache
 mount -o relatime /dev/vg1/var_tmp /mnt/var/tmp
 
 
-mount -o noatime /dev/vg1/tmp /mnt/tmp
+mount -o relatime /dev/vg1/tmp /mnt/tmp
 
 echo "mounted all dirs"
 # create home directory
