@@ -507,12 +507,17 @@ fi
 lvcreate -l 90%FREE vg1 -n root
 
 
-mkfs.btrfs --csum XXHASH /dev/vg1/root
-mkfs.btrfs --csum XXHASH /dev/vg1/var_log
-mkfs.btrfs --csum XXHASH /dev/vg1/var_cache
-mkfs.btrfs --csum XXHASH /dev/vg1/var_tmp
+# mkfs.btrfs --csum XXHASH /dev/vg1/root
+# mkfs.btrfs --csum XXHASH /dev/vg1/var_log
+# mkfs.btrfs --csum XXHASH /dev/vg1/var_cache
+# mkfs.btrfs --csum XXHASH /dev/vg1/var_tmp
 
-mkfs.ext4 -m 2 /dev/vg1/tmp
+mkfs.ext4 -m 1 /dev/vg1/root
+mkfs.ext4 -m 5 /dev/vg1/var_log
+mkfs.ext4 -m 5 /dev/vg1/var_cache
+mkfs.ext4 -m 5 /dev/vg1/var_tmp
+
+mkfs.ext4 -m 5 /dev/vg1/tmp
 tune2fs -O ^has_journal /dev/vg1/tmp
 
 
@@ -525,31 +530,51 @@ else
 fi
 
 # mount the root partition
-mount /dev/vg1/root /mnt
-btrfs subvolume create /mnt/@
-btrfs subvolume create /mnt/@home
-btrfs subvolume create /mnt/@var
-umount /mnt
+# mount /dev/vg1/root /mnt
+# btrfs subvolume create /mnt/@
+# btrfs subvolume create /mnt/@home
+# btrfs subvolume create /mnt/@var
+# umount /mnt
+#
+#
+# mount /dev/vg1/var_log /mnt/
+# btrfs subvolume create /mnt/@
+# umount /mnt
+#
+#
+# mount /dev/vg1/var_cache /mnt
+# btrfs subvolume create /mnt/@
+# umount /mnt
+#
+#
+#
+# mount /dev/vg1/var_tmp /mnt
+# btrfs subvolume create /mnt/@
+# umount /mnt
 
 
-mount /dev/vg1/var_log /mnt/
-btrfs subvolume create /mnt/@
-umount /mnt
+# may not be needed check dumpe2fs
+# e2fsck -Df /dev/vg1/root
+# resize2fs -b /dev/vg1/root
+# tune2fs -O metadata_csum /dev/vg1/root
+#
+# e2fsck -Df /dev/vg1/var_tmp
+# resize2fs -b /dev/vg1/var_tmp
+# tune2fs -O metadata_csum /dev/vg1/var_tmp
+#
+# e2fsck -Df /dev/vg1/var_cache
+# resize2fs -b /dev/vg1/var_cache
+# tune2fs -O metadata_csum /dev/vg1/var_cache
+#
+# e2fsck -Df /dev/vg1/var_log
+# resize2fs -b /dev/vg1/var_log
+# tune2fs -O metadata_csum /dev/vg1/var_tmp
 
 
-mount /dev/vg1/var_cache /mnt
-btrfs subvolume create /mnt/@
-umount /mnt
 
 
-
-mount /dev/vg1/var_tmp /mnt
-btrfs subvolume create /mnt/@
-umount /mnt
-
-
-
-mount -o subvol=@ /dev/vg1/root /mnt
+# mount -o subvol=@ /dev/vg1/root /mnt
+mount -o relatime /dev/vg1/root /mnt
 
 mkdir -p /mnt/home
 mkdir -p /mnt/var/log
@@ -558,7 +583,7 @@ mkdir -p /mnt/tmp
 mkdir -p /mnt/var/tmp
 
 
-mount -o subvol=@var /dev/vg1/root /mnt/var
+# mount -o subvol=@var /dev/vg1/root /mnt/var
 
 mkdir -p /mnt/home
 mkdir -p /mnt/var/log
@@ -567,13 +592,16 @@ mkdir -p /mnt/tmp
 mkdir -p /mnt/var/tmp
 
 
-mount -o subvol=@home /dev/vg1/root /mnt/home
+# mount -o subvol=@home /dev/vg1/root /mnt/home
 
-mount -o subvol=@ /dev/vg1/var_log /mnt/var/log
+# mount -o subvol=@ /dev/vg1/var_log /mnt/var/log
+mount -o relatime /dev/vg1/var_log /mnt/var/log
 
-mount -o subvol=@ /dev/vg1/var_cache /mnt/var/cache
+# mount -o subvol=@ /dev/vg1/var_cache /mnt/var/cache
+mount -o relatime /dev/vg1/var_cache /mnt/var/cache
 
-mount -o subvol=@ /dev/vg1/var_tmp /mnt/var/tmp
+# mount -o subvol=@ /dev/vg1/var_tmp /mnt/var/tmp
+mount -o relatime /dev/vg1/var_tmp /mnt/var/tmp
 
 
 mount -o noatime /dev/vg1/tmp /mnt/tmp
@@ -626,7 +654,7 @@ echo "pc u ml"
 
 echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist" | tee -a /etc/pacman.conf
 
-pacman -Sy  --noconfirm crudini dos2unix
+pacman -Sy  --noconfirm crudini dos2unix e2fsprogs
 crudini --set /etc/pacman.conf options ParallelDownloads 64
 # crudini --set /mnt/etc/pacman.conf options ParallelDownloads 32
 
