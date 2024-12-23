@@ -27,7 +27,14 @@ pacman -U  --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirror
 
 echo -e "\n[chaotic-aur]\nInclude = /etc/pacman.d/chaotic-mirrorlist\nUsage = Sync Search" | tee -a /etc/pacman.conf
 
-pacman -Syu  --noconfirm chaotic-aur/crudini amd-ucode intel-ucode sudo rclone
+# pacman -Syu  --noconfirm chaotic-aur/crudini amd-ucode intel-ucode sudo rclone
+pacman -Syu  --noconfirm amd-ucode intel-ucode sudo rclone
+
+crudini_venv="/root/.local/venv/crudini"
+mkdir -p $crudini_venv
+python -m venv $crudini_venv/venv
+source $crudini_venv/venv/bin/activate
+pip install crudini
 
 crudini --set /etc/pacman.conf options ParallelDownloads 64
 
