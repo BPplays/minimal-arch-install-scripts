@@ -767,11 +767,11 @@ echo "luks uuid $LUKS_UUID"
 # prepare boot options for refind
 BOOT_OPTIONS="rd.luks.uuid=${LUKS_UUID} cryptdevice=UUID=${LUKS_UUID}:cryptlvm:allow-discards root=/dev/vg1/root"
 # RW_LOGLEVEL_OPTIONS="rw loglevel=4"
-RW_LOGLEVEL_OPTIONS="rw efi_pstore.pstore_disable=0 panic=5"
+RW_LOGLEVEL_OPTIONS="rw"
 # INITRD_OPTIONS="initrd=amd-ucode.img initrd=initramfs-%v.img"
 # INITRD_OPTIONS="add_efi_memmap initrd=intel-ucode.img initrd=amd-ucode.img initrd=initramfs-%v.img"
 INITRD_OPTIONS="add_efi_memmap"
-MISC_PARAMS="amdgpu.dcdebugmask=0x10"
+MISC_PARAMS="efi_pstore.pstore_disable=0 panic=5 zswap.enabled=0"
 # configure refind
 cat <<EOF >/mnt/boot/refind_linux.conf
 "Boot"     "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS}"
