@@ -771,7 +771,8 @@ RW_LOGLEVEL_OPTIONS="rw"
 # INITRD_OPTIONS="initrd=amd-ucode.img initrd=initramfs-%v.img"
 # INITRD_OPTIONS="add_efi_memmap initrd=intel-ucode.img initrd=amd-ucode.img initrd=initramfs-%v.img"
 INITRD_OPTIONS="add_efi_memmap"
-MISC_PARAMS="efi_pstore.pstore_disable=0 panic=5 zswap.enabled=0"
+# MISC_PARAMS="efi_pstore.pstore_disable=0 panic=5 zswap.enabled=0"
+MISC_PARAMS="efi_pstore.pstore_disable=0 panic=5 iommu=soft"
 # configure refind
 cat <<EOF >/mnt/boot/refind_linux.conf
 "Boot"     "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS}"
@@ -780,7 +781,7 @@ cat <<EOF >/mnt/boot/refind_linux.conf
 "Boot using fallback initramfs with nomodeset"  "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} initrd=intel-ucode.img initrd=amd-ucode.img initrd=initramfs-%v-fallback.img nomodeset"
 "Boot to terminal"               "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS} systemd.unit=multi-user.target"
 "Boot to terminal with nomodeset"               "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS} systemd.unit=multi-user.target nomodeset"
-"Boot to terminal with nomodeset"               "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS} single nomodeset"
+"Boot to terminal single user with nomodeset"               "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS} single nomodeset"
 "Boot to single-user mode"       "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS} single"
 "Boot to single-user mode with nomodeset"       "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS} single nomodeset"
 "Boot with minimal options"      "${BOOT_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS} ro"
