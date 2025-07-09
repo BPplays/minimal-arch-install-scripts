@@ -772,7 +772,8 @@ RW_LOGLEVEL_OPTIONS="rw"
 # INITRD_OPTIONS="add_efi_memmap initrd=intel-ucode.img initrd=amd-ucode.img initrd=initramfs-%v.img"
 INITRD_OPTIONS="add_efi_memmap"
 # MISC_PARAMS="efi_pstore.pstore_disable=0 panic=5 zswap.enabled=0"
-MISC_PARAMS="efi_pstore.pstore_disable=0 panic=5 iommu=soft"
+# MISC_PARAMS="efi_pstore.pstore_disable=0 panic=5 iommu=soft"
+MISC_PARAMS="efi_pstore.pstore_disable=0 panic=5"
 # configure refind
 cat <<EOF >/mnt/boot/refind_linux.conf
 "Boot"     "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS}"
