@@ -41,6 +41,7 @@ crudini --set /etc/pacman.conf options ParallelDownloads 64
 set +euo pipefail
 pacman -Syu --noconfirm inetutils
 pacman -Syu --noconfirm aria2
+pacman -Syu --noconfirm fcron
 pacman -Syu --noconfirm chaotic-aur/pm2ml chaotic-aur/python3-xcgf
 pacman -Syu --noconfirm chaotic-aur/powerpill
 pacman -Syu --noconfirm chaotic-aur/yay
