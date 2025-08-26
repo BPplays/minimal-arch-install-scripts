@@ -717,10 +717,10 @@ mv -f vconsole.conf_cp /mnt/etc/vconsole.conf
 dos2unix /mnt/etc/vconsole.conf
 
 
-cp wifi_backend.conf wifi_backend.conf_cp
-mkdir -p /mnt/etc/NetworkManager/conf.d/
-mv -f wifi_backend.conf_cp /mnt/etc/NetworkManager/conf.d/wifi_backend.conf
-dos2unix /mnt/etc/NetworkManager/conf.d/wifi_backend.conf
+# cp wifi_backend.conf wifi_backend.conf_cp
+# mkdir -p /mnt/etc/NetworkManager/conf.d/
+# mv -f wifi_backend.conf_cp /mnt/etc/NetworkManager/conf.d/wifi_backend.conf
+# dos2unix /mnt/etc/NetworkManager/conf.d/wifi_backend.conf
 
 
 cp wireless-regdom wireless-regdom_cp
