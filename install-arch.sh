@@ -507,15 +507,15 @@ fi
 lvcreate -l 90%FREE vg1 -n root
 
 
-# mkfs.btrfs --csum XXHASH /dev/vg1/root
-# mkfs.btrfs --csum XXHASH /dev/vg1/var_log
-# mkfs.btrfs --csum XXHASH /dev/vg1/var_cache
-# mkfs.btrfs --csum XXHASH /dev/vg1/var_tmp
+mkfs.btrfs --csum XXHASH /dev/vg1/root
+mkfs.btrfs --csum XXHASH /dev/vg1/var_log
+mkfs.btrfs --csum XXHASH /dev/vg1/var_cache
+mkfs.btrfs --csum XXHASH /dev/vg1/var_tmp
 
-mkfs.ext4 -m 1 /dev/vg1/root
-mkfs.ext4 -m 5 /dev/vg1/var_log
-mkfs.ext4 -m 5 /dev/vg1/var_cache
-mkfs.ext4 -m 5 /dev/vg1/var_tmp
+# mkfs.ext4 -m 1 /dev/vg1/root
+# mkfs.ext4 -m 5 /dev/vg1/var_log
+# mkfs.ext4 -m 5 /dev/vg1/var_cache
+# mkfs.ext4 -m 5 /dev/vg1/var_tmp
 
 mkfs.ext4 -m 5 /dev/vg1/tmp
 tune2fs -O ^has_journal /dev/vg1/tmp
@@ -530,45 +530,45 @@ else
 fi
 
 # mount the root partition
-# mount /dev/vg1/root /mnt
-# btrfs subvolume create /mnt/@
-# btrfs subvolume create /mnt/@home
-# btrfs subvolume create /mnt/@var
-# umount /mnt
-#
-#
-# mount /dev/vg1/var_log /mnt/
-# btrfs subvolume create /mnt/@
-# umount /mnt
-#
-#
-# mount /dev/vg1/var_cache /mnt
-# btrfs subvolume create /mnt/@
-# umount /mnt
-#
-#
-#
-# mount /dev/vg1/var_tmp /mnt
-# btrfs subvolume create /mnt/@
-# umount /mnt
+mount /dev/vg1/root /mnt
+btrfs subvolume create /mnt/@
+btrfs subvolume create /mnt/@home
+btrfs subvolume create /mnt/@var
+umount /mnt
+
+
+mount /dev/vg1/var_log /mnt/
+btrfs subvolume create /mnt/@
+umount /mnt
+
+
+mount /dev/vg1/var_cache /mnt
+btrfs subvolume create /mnt/@
+umount /mnt
+
+
+
+mount /dev/vg1/var_tmp /mnt
+btrfs subvolume create /mnt/@
+umount /mnt
 
 
 # may not be needed check dumpe2fs
-# e2fsck -Df /dev/vg1/root
-# resize2fs -b /dev/vg1/root
-# tune2fs -O metadata_csum /dev/vg1/root
-#
-# e2fsck -Df /dev/vg1/var_tmp
-# resize2fs -b /dev/vg1/var_tmp
-# tune2fs -O metadata_csum /dev/vg1/var_tmp
-#
-# e2fsck -Df /dev/vg1/var_cache
-# resize2fs -b /dev/vg1/var_cache
-# tune2fs -O metadata_csum /dev/vg1/var_cache
-#
-# e2fsck -Df /dev/vg1/var_log
-# resize2fs -b /dev/vg1/var_log
-# tune2fs -O metadata_csum /dev/vg1/var_tmp
+e2fsck -Df /dev/vg1/root
+resize2fs -b /dev/vg1/root
+tune2fs -O metadata_csum /dev/vg1/root
+
+e2fsck -Df /dev/vg1/var_tmp
+resize2fs -b /dev/vg1/var_tmp
+tune2fs -O metadata_csum /dev/vg1/var_tmp
+
+e2fsck -Df /dev/vg1/var_cache
+resize2fs -b /dev/vg1/var_cache
+tune2fs -O metadata_csum /dev/vg1/var_cache
+
+e2fsck -Df /dev/vg1/var_log
+resize2fs -b /dev/vg1/var_log
+tune2fs -O metadata_csum /dev/vg1/var_tmp
 
 
 

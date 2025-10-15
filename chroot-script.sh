@@ -5,12 +5,10 @@ set -euo pipefail
 mount -a
 
 cat <<EOF >>/etc/resolv.conf
+nameserver fd0e:a882:618c::1
 nameserver fd0e:a882:618c::20:0
-nameserver fd0e:a882:618c::20:1
 nameserver fd0e:a882:618c::20:2
-nameserver fd0e:a882:618c::
-nameserver 2601:204:4100:1db0:250:56ff:fe3e:d7b9
-nameserver 2601:204:4100:1db0:250:56ff:fe3c:e6c4
+nameserver fd0e:a882:618c::20:1
 nameserver 10.0.20.0
 nameserver 10.0.20.2
 nameserver 10.0.20.1
