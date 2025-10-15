@@ -529,6 +529,7 @@ else
 	swapon /dev/$VG_NAME/swap_lv1
 fi
 
+# btrfs
 # mount the root partition
 mount /dev/vg1/root /mnt
 btrfs subvolume create /mnt/@
@@ -553,22 +554,23 @@ btrfs subvolume create /mnt/@
 umount /mnt
 
 
-# may not be needed check dumpe2fs
-e2fsck -Df /dev/vg1/root
-resize2fs -b /dev/vg1/root
-tune2fs -O metadata_csum /dev/vg1/root
-
-e2fsck -Df /dev/vg1/var_tmp
-resize2fs -b /dev/vg1/var_tmp
-tune2fs -O metadata_csum /dev/vg1/var_tmp
-
-e2fsck -Df /dev/vg1/var_cache
-resize2fs -b /dev/vg1/var_cache
-tune2fs -O metadata_csum /dev/vg1/var_cache
-
-e2fsck -Df /dev/vg1/var_log
-resize2fs -b /dev/vg1/var_log
-tune2fs -O metadata_csum /dev/vg1/var_tmp
+# # ext4 did not ever use?
+# # may not be needed check dumpe2fs
+# e2fsck -Df /dev/vg1/root
+# resize2fs -b /dev/vg1/root
+# tune2fs -O metadata_csum /dev/vg1/root
+#
+# e2fsck -Df /dev/vg1/var_tmp
+# resize2fs -b /dev/vg1/var_tmp
+# tune2fs -O metadata_csum /dev/vg1/var_tmp
+#
+# e2fsck -Df /dev/vg1/var_cache
+# resize2fs -b /dev/vg1/var_cache
+# tune2fs -O metadata_csum /dev/vg1/var_cache
+#
+# e2fsck -Df /dev/vg1/var_log
+# resize2fs -b /dev/vg1/var_log
+# tune2fs -O metadata_csum /dev/vg1/var_tmp
 
 
 
