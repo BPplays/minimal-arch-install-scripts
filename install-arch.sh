@@ -296,6 +296,48 @@ else
 	# echo "Setting timezone to $final_tz..."
 fi
 
+while true; do
+	echo "Choose system type:"
+	echo "1) desktop"
+	echo "2) laptop"
+	echo "3) server"
+	read -rp "Enter choice [1-3]: " choice
+
+	case "$choice" in
+		1)
+			system_label="desktop"
+			extra_kern_params="preempt=full nohz_full=all threadirqs"
+			;;
+		2)
+			system_label="laptop"
+			extra_kern_params="preempt=full rcu_nocbs=all rcutree.enable_rcu_lazy=1"
+			;;
+		3)
+			system_label="server"
+			extra_kern_params=""
+			;;
+		*)
+			system_label="other"
+			extra_kern_params=""
+			;;
+	esac
+
+	echo
+	echo "You selected: $system_label"
+	echo "Kernel params: ${extra_kern_params:-<none>}"
+	read -rp "Is this correct? [y/N]: " confirm
+
+	case "$confirm" in
+		[yY]|[yY][eE][sS])
+			break
+			;;
+		*)
+			# echo "Okay, let's try again."
+			echo
+			;;
+	esac
+done
+
 # echo -n "Enter Time Zone: "
 # read -r TIME_ZONE_t
 export TIME_ZONE="$final_tz"
@@ -778,8 +820,8 @@ INITRD_OPTIONS="add_efi_memmap"
 MISC_PARAMS="efi_pstore.pstore_disable=0 panic=5"
 # configure refind
 cat <<EOF >/mnt/boot/refind_linux.conf
-"Boot"     "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS}"
-"Boot with nomodeset"               "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS} nomodeset"
+"Boot"     "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS} ${extra_kern_params}"
+"Boot with nomodeset"               "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS} nomodeset ${extra_kern_params}"
 "Boot using fallback initramfs"  "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} initrd=intel-ucode.img initrd=amd-ucode.img initrd=initramfs-%v-fallback.img"
 "Boot using fallback initramfs with nomodeset"  "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} initrd=intel-ucode.img initrd=amd-ucode.img initrd=initramfs-%v-fallback.img nomodeset"
 "Boot to terminal"               "${BOOT_OPTIONS} ${RW_LOGLEVEL_OPTIONS} ${INITRD_OPTIONS} ${MISC_PARAMS} systemd.unit=multi-user.target"
