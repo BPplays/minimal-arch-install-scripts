@@ -107,6 +107,12 @@ echo "mkinitcpio -p linux"
 #
 # mkinitcpio -p linux-zen
 # mkinitcpio -p linux-rt
+
+sudo mkinitcpio -U /boot/efi/EFI/Linux/arch-linux.efi -k /boot/vmlinuz-linux
+sudo mkinitcpio -U /boot/efi/EFI/Linux/arch-linux-lts.efi -k /boot/vmlinuz-linux-lts
+# sudo mkinitcpio -U /boot/efi/EFI/Linux/arch-linux-zen.efi -k /boot/vmlinuz-linux-zen
+# sudo mkinitcpio -U /boot/efi/EFI/Linux/arch-linux-rt.efi -k /boot/vmlinuz-linux-rt
+
 set -euo pipefail
 
 # install and configure refind

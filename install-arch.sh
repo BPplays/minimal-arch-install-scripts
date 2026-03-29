@@ -737,6 +737,22 @@ EOF
 
 echo "refind-install hook"
 
+
+cat <<EOF >/etc/pacman.d/hooks/mkinitcpio-uki.hook
+[Trigger]
+Operation=Install
+Operation=Upgrade
+Type=Package
+Target=linux
+
+[Action]
+Description = Building UKI for new kernel
+When=PostTransaction
+Exec=/usr/bin/mkinitcpio -U /boot/efi/EFI/Linux/arch-linux.efi -k /boot/vmlinuz-linux
+EOF
+
+echo "mkinitcpio-uki hook"
+
 # Generate an fstab config
 genfstab -U /mnt > /mnt/etc/fstab
 fstab_no_fsck_tmp=$(awk '$2 == "/tmp" { $6 = "0" }1' /mnt/etc/fstab)
@@ -836,6 +852,23 @@ EOF
 echo "cat /mnt/boot/refind_linux.conf"
 cat /mnt/boot/refind_linux.conf
 echo ""
+
+BOOT_OPTIONS="rd.luks.name=${LUKS_UUID}=cryptroot rd.luks.options=${LUKS_UUID}=allow-discards root=/dev/mapper/vg1-root"
+RW_OPTIONS="rw"
+MISC_PARAMS="efi_pstore.pstore_disable=0 panic=5"
+# EXTRA_PARAMS="${extra_kern_params:-}"
+EXTRA_PARAMS="add_efi_memmap preempt=full rcu_nocbs=all rcutree.enable_rcu_lazy=1"
+
+mkdir -p /mnt/etc/kernel
+cat > /mnt/etc/kernel/cmdline <<EOF
+${BOOT_OPTIONS} ${RW_OPTIONS} ${MISC_PARAMS} ${EXTRA_PARAMS}
+EOF
+
+
+echo "cat /etc/kernel/cmdline"
+cat cat /etc/kernel/cmdline
+echo ""
+
 # sed -i 's|#extra_kernel_version_strings|extra_kernel_version_strings|' /mnt/boot/efi/EFI/refind/refind.conf
 echo 'extra_kernel_version_strings "linux-hardened,linux-rt-lts,linux-zen,linux-lts,linux-rt,linux"' | sudo tee -a /mnt/boot/efi/EFI/refind/refind.conf
 sudo sed -i 's|#fold_linux_kernels|fold_linux_kernels|' /mnt/boot/efi/EFI/refind/refind.conf
