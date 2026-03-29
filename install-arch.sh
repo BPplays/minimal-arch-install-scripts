@@ -738,7 +738,25 @@ EOF
 echo "refind-install hook"
 
 
-cat <<EOF >/etc/pacman.d/hooks/mkinitcpio-uki.hook
+hooks=(
+    "/boot/efi/EFI/Linux/arch-linux.efi /boot/vmlinuz-linux"
+    "/boot/efi/EFI/Linux/arch-linux-lts.efi /boot/vmlinuz-linux-lts"
+    "/boot/efi/EFI/Linux/arch-linux-zen.efi /boot/vmlinuz-linux-zen"
+    "/boot/efi/EFI/Linux/arch-linux-rt.efi /boot/vmlinuz-linux-rt"
+)
+
+for pair in "${hooks[@]}"; do
+    # Split into efi destination and kernel source
+    efi_dest=$(echo "$pair" | awk '{print $1}')
+    kernel_src=$(echo "$pair" | awk '{print $2}')
+
+    # Create a hash of the pair for unique hook filename
+    hash=$(echo -n "$efi_dest $kernel_src" | sha256sum | awk '{print $1}')
+
+    hook_file="/etc/pacman.d/hooks/mkinitcpio-uki-$hash.hook"
+
+    # Generate the hook
+    cat <<EOF >"$hook_file"
 [Trigger]
 Operation=Install
 Operation=Upgrade
@@ -748,10 +766,26 @@ Target=linux
 [Action]
 Description = Building UKI for new kernel
 When=PostTransaction
-Exec=/usr/bin/mkinitcpio -U /boot/efi/EFI/Linux/arch-linux.efi -k /boot/vmlinuz-linux
+Exec=/usr/bin/mkinitcpio -U $efi_dest -k $kernel_src
 EOF
 
-echo "mkinitcpio-uki hook"
+    echo "Created hook: $hook_file for EFI dest: $efi_dest and kernel: $kernel_src"
+done
+
+# cat <<EOF >/etc/pacman.d/hooks/mkinitcpio-uki.hook
+# [Trigger]
+# Operation=Install
+# Operation=Upgrade
+# Type=Package
+# Target=linux
+#
+# [Action]
+# Description = Building UKI for new kernel
+# When=PostTransaction
+# Exec=/usr/bin/mkinitcpio -U /boot/efi/EFI/Linux/arch-linux.efi -k /boot/vmlinuz-linux
+# EOF
+#
+# echo "mkinitcpio-uki hook"
 
 # Generate an fstab config
 genfstab -U /mnt > /mnt/etc/fstab
