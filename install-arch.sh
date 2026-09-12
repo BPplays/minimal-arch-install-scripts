@@ -535,7 +535,7 @@ lv_size_bytes_512=$(convert_to_floor_512mult_int $lv_size_bytes)
 lvcreate -L ${lv_size_bytes_512}b -n var_log $VG_NAME
 lvcreate -L ${lv_size_bytes_512}b -n var_cache $VG_NAME
 lvcreate -L ${lv_size_bytes_512}b -n var_tmp $VG_NAME
-# lvcreate -L ${lv_size_bytes_512}b -n tmp $VG_NAME
+lvcreate -L ${lv_size_bytes_512}b -n tmp $VG_NAME
 
 
 if [[ -z "$SWAP_SIZE" || "$SWAP_SIZE" == "0" ]]; then
@@ -559,10 +559,8 @@ mkfs.btrfs --csum XXHASH /dev/vg1/var_tmp
 # mkfs.ext4 -m 5 /dev/vg1/var_cache
 # mkfs.ext4 -m 5 /dev/vg1/var_tmp
 
-
-#WARN: this was used even with btrfs based deployments for disk based /tmp
-# mkfs.ext4 -m 5 /dev/vg1/tmp
-# tune2fs -O ^has_journal /dev/vg1/tmp
+mkfs.ext4 -m 5 /dev/vg1/tmp
+tune2fs -O ^has_journal /dev/vg1/tmp
 
 
 #! look into this might cause swap errors and crashes on fresh install?
@@ -650,8 +648,7 @@ mount -o relatime /dev/vg1/var_cache /mnt/var/cache
 mount -o relatime /dev/vg1/var_tmp /mnt/var/tmp
 
 
-# mount -o relatime /dev/vg1/tmp /mnt/tmp
-mount -t tmpfs -o rw,nosuid,nodev,size=1G,mode=1777 tmpfs /mnt/tmp
+mount -o relatime /dev/vg1/tmp /mnt/tmp
 
 echo "mounted all dirs"
 # create home directory
@@ -896,14 +893,9 @@ MISC_PARAMS="efi_pstore.pstore_disable=0 panic=5"
 # EXTRA_PARAMS="${extra_kern_params:-}"
 EXTRA_PARAMS="add_efi_memmap preempt=full rcu_nocbs=all rcutree.enable_rcu_lazy=1"
 
-install -d /mnt/etc/cmdline.d/
-cat > /mnt/etc/cmdline.d/_main.conf <<EOF
+mkdir -p /mnt/etc/kernel
+cat > /mnt/etc/kernel/cmdline <<EOF
 ${BOOT_OPTIONS} ${RW_OPTIONS} ${MISC_PARAMS} ${EXTRA_PARAMS}
-EOF
-
-
-cat > /mnt/etc/cmdline.d/usb-polling.conf <<EOF
-mousepoll=1 kbpoll=1 jspoll=1
 EOF
 
 
