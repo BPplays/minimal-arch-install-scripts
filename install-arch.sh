@@ -303,24 +303,25 @@ if [[ -n "$arch" ]]; then
 	tz_msg="The timezone based on DHCPv6 is:"
 fi
 if [[ -z "$auto_tz" ]]; then
-    auto_tz=$(curl -s https://ipapi.co/timezone/)
+    auto_tz=$(curl -fsL https://ipapi.co/timezone/)
 	tz_msg="The estimated timezone based on your IP address is:"
 fi
 set -euo pipefail
 
-# Ask user to confirm or input the correct timezone
-echo "$tz_msg $auto_tz"
-read -e -p "Is this correct? (Y/n): " response
+if [[ -n "$auto_tz" ]]; then
+    # Ask user to confirm detected timezone
+    echo "$tz_msg $auto_tz"
+    read -e -p "Is this correct? (Y/n): " response
+    response=${response:-Y}
 
-response=${response:-Y}  # Default to 'Y' if no input
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+        final_tz="$auto_tz"
+    fi
+fi
 
-if [[ "$response" =~ ^[Yy]$ ]]; then
-	# Set the detected timezone
-	final_tz="$auto_tz"
-else
-	# Prompt user to enter the correct timezone
-	read -p "Please enter your timezone (e.g., 'Asia/Tokyo', 'America/Los_Angeles', 'America/New_York'): " final_tz
-	# echo "Setting timezone to $final_tz..."
+# If no automatic timezone was found, or user rejected it
+if [[ -z "$final_tz" ]]; then
+    read -e -p "Please enter your timezone (e.g., 'Asia/Tokyo', 'America/Los_Angeles', 'America/New_York'): " final_tz
 fi
 
 while true; do
