@@ -298,7 +298,7 @@ final_tz=""
 # Fetch estimated timezone
 set +euo pipefail
 if [[ -n "$arch" ]]; then
-    auto_tz=$(/mnt/opt/arch_install_sh/get_tz_dhcp -doTzdb)
+    auto_tz=$(/mnt/opt/arch_install_sh/get_tz_dhcp -doTzdb -newAddress)
 fi
 
 if [[ -z "$auto_tz" ]]; then
