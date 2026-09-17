@@ -513,11 +513,14 @@ while [[ -z "$final_tz" ]]; do
         for i in "${!suggestions[@]}"; do
             printf '  %d) %s\n' "$((i + 1))" "${suggestions[i]}"
         done
+		printf '  0) %s\n' "retype"
         echo
 
         read -e -p "Enter a number to use a suggested timezone, or press Enter to retype: " choice
 
-        if [[ "$choice" =~ ^[1-9][0-9]*$ ]] &&
+		if [[ "$choice" == "0" ]]; then
+			# special case for 0
+		elif [[ "$choice" =~ ^[1-9][0-9]*$ ]] &&
            (( choice <= ${#suggestions[@]} )); then
             final_tz="${suggestions[$((choice - 1))]}"
         fi
