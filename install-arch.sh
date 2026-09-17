@@ -295,21 +295,21 @@ if [[ -n "$arch" ]]; then
 fi
 
 final_tz=""
-tz_based_on="<nothing>"
+tz_msg="<broken auto timezone msg>"
 # Fetch estimated timezone
 set +euo pipefail
 if [[ -n "$arch" ]]; then
     auto_tz=$(/mnt/opt/arch_install_sh/get_tz_dhcp -doTzdb -newAddress)
-	tz_based_on="DHCPv6"
+	tz_msg="The timezone based on DHCPv6 is:"
 fi
 if [[ -z "$auto_tz" ]]; then
     auto_tz=$(curl -s https://ipapi.co/timezone/)
-	tz_based_on="your IP address"
+	tz_msg="The estimated timezone based on your IP address is:"
 fi
 set -euo pipefail
 
 # Ask user to confirm or input the correct timezone
-echo "The estimated timezone based on $tz_based_on is: $auto_tz"
+echo "$tz_msg $auto_tz"
 read -e -p "Is this correct? (Y/n): " response
 
 response=${response:-Y}  # Default to 'Y' if no input
