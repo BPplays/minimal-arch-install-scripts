@@ -247,7 +247,7 @@ ram_gib=$(convert_bytes_gib $ram_bytes)
 echo ""
 echo "RAM size: $ram_gb GB, $ram_gib GiB"
 read -p "would you like to use si decimal prefixes for RAM and swap over base-2 prefixes (GB is si, GiB is base-2. base-2 is more standard for RAM and the default here)? [y/N]: " response
-response=${response:-N}  # Default to 'Y' if no input
+response=${response:-N}
 
 echo ""
 if [[ "$response" =~ ^[Yy]$ ]]; then
@@ -274,17 +274,42 @@ read -r arch_size_gb
 # giga___10_power_9=1000000000
 gb_to_gib=0.9313225746
 
+
+
+case "$(uname -m)" in
+    x86_64)
+        arch="amd64"
+        ;;
+    aarch64|arm64)
+        arch="arm64"
+        ;;
+    *)
+        echo "Unsupported architecture: $(uname -m); skipping get_tz_dhcp"
+        arch=""
+        ;;
+esac
+
+if [[ -n "$arch" ]]; then
+    cp "./bin/arch/$arch/get_tz_dhcp" /mnt/opt/arch_install_sh/
+	dos2unix /mnt/opt/arch_install_sh/*
+fi
+
 final_tz=""
 # Fetch estimated timezone
 set +euo pipefail
-auto_tz=$(curl -s https://ipapi.co/timezone/)
+if [[ -n "$arch" ]]; then
+    auto_tz=$(/mnt/opt/arch_install_sh/get_tz_dhcp -doTzdb)
+fi
+
+if [[ -z "$auto_tz" ]]; then
+    auto_tz=$(curl -s https://ipapi.co/timezone/)
+fi
 set -euo pipefail
 
 # Ask user to confirm or input the correct timezone
 echo "The estimated timezone based on your IP address is: $auto_tz"
 read -e -p "Is this correct? (Y/n): " response
 
-# Handle user input
 response=${response:-Y}  # Default to 'Y' if no input
 
 if [[ "$response" =~ ^[Yy]$ ]]; then

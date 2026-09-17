@@ -62,11 +62,13 @@ locale-gen
 echo "LANG=en_US.UTF-8" >/etc/locale.conf
 
 # set the time zone
-ln -sf /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime
+# ln -sf /usr/share/zoneinfo/${TIME_ZONE} /etc/localtime
+timedatectl set-timezone "$TIME_ZONE"
 hwclock --systohc
 
 # set hostname
-echo "${HOSTNAME}" >/etc/hostname
+#echo "${HOSTNAME}" >/etc/hostname
+hostnamectl hostname "$HOSTNAME"
 
 # configure hosts file
 cat <<EOF >>/etc/hosts
