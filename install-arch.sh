@@ -290,6 +290,8 @@ case "$(uname -m)" in
 esac
 
 if [[ -n "$arch" ]]; then
+
+	mkdir -p /mnt/opt/arch_install_sh
     cp "./bin/$arch/get_tz_dhcp" /mnt/opt/arch_install_sh/
 	dos2unix /mnt/opt/arch_install_sh/*
 fi
