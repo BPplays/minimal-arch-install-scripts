@@ -520,6 +520,7 @@ while [[ -z "$final_tz" ]]; do
 
 		if [[ "$choice" == "0" ]]; then
 			# special case for 0
+			final_tz=""
 		elif [[ "$choice" =~ ^[1-9][0-9]*$ ]] &&
            (( choice <= ${#suggestions[@]} )); then
             final_tz="${suggestions[$((choice - 1))]}"
