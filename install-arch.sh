@@ -295,21 +295,190 @@ if [[ -n "$arch" ]]; then
 fi
 
 final_tz=""
+auto_tz=""
 tz_msg="<broken auto timezone msg>"
+
+# Cache the valid timezone list once.
+mapfile -t valid_timezones < <(timedatectl list-timezones)
+
+timezone_is_valid() {
+    local tz="$1"
+    printf '%s\n' "${valid_timezones[@]}" | grep -Fxq -- "$tz"
+}
+
+timezone_find_case_insensitive() {
+    local input="$1"
+    local tz
+
+    for tz in "${valid_timezones[@]}"; do
+        if [[ "${tz,,}" == "${input,,}" ]]; then
+            printf '%s\n' "$tz"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+# Return up to 5 timezone names most similar to the input using Jaro-Winkler.
+find_similar_timezones() {
+    local input="$1"
+
+    TIMEZONES="$(printf '%s\n' "${valid_timezones[@]}")" \
+        python3 - "$input" <<'PY'
+import os
+import sys
+
+
+def jaro(s1: str, s2: str) -> float:
+    if s1 == s2:
+        return 1.0
+
+    len1 = len(s1)
+    len2 = len(s2)
+
+    if not len1 or not len2:
+        return 0.0
+
+    match_distance = max(len1, len2) // 2 - 1
+
+    if match_distance < 0:
+        match_distance = 0
+
+    matches1 = [False] * len1
+    matches2 = [False] * len2
+
+    matches = 0
+
+    for i, c1 in enumerate(s1):
+        start = max(0, i - match_distance)
+        end = min(i + match_distance + 1, len2)
+
+        for j in range(start, end):
+            if matches2[j] or c1 != s2[j]:
+                continue
+
+            matches1[i] = True
+            matches2[j] = True
+            matches += 1
+            break
+
+    if not matches:
+        return 0.0
+
+    matched1 = [s1[i] for i in range(len1) if matches1[i]]
+    matched2 = [s2[j] for j in range(len2) if matches2[j]]
+
+    transpositions = sum(a != b for a, b in zip(matched1, matched2)) / 2
+
+    return (
+        matches / len1
+        + matches / len2
+        + (matches - transpositions) / matches
+    ) / 3
+
+
+def jaro_winkler(s1: str, s2: str) -> float:
+    s1 = s1.lower()
+    s2 = s2.lower()
+
+    score = jaro(s1, s2)
+
+    # Standard Jaro-Winkler prefix length, capped at 4.
+    prefix = 0
+    for a, b in zip(s1, s2):
+        if a != b or prefix == 4:
+            break
+        prefix += 1
+
+    return score + prefix * 0.1 * (1.0 - score)
+
+
+input_tz = sys.argv[1]
+timezones = os.environ["TIMEZONES"].splitlines()
+
+slash_count = input_tz.count("/")
+
+if slash_count == 1:
+    # Input has Region/City: compare both blocks separately.
+    input_blocks = input_tz.split("/")
+    input_has_region = True
+else:
+    # Input has no slash: treat it as a city/location block only.
+    input_blocks = [input_tz]
+    input_has_region = False
+
+
+results = []
+
+for timezone in timezones:
+    if not timezone:
+        continue
+
+    candidate_blocks = timezone.split("/")
+
+    if input_has_region and len(candidate_blocks) == 2:
+        region_score = jaro_winkler(
+            input_blocks[0],
+            candidate_blocks[0],
+        )
+
+        city_score = jaro_winkler(
+            input_blocks[1],
+            candidate_blocks[1],
+        )
+
+        # Overall similarity of both components.
+        score = (region_score + city_score) / 2.0
+
+        # Modest bonus for an exact region match.
+        if input_blocks[0].lower() == candidate_blocks[0].lower():
+            score += 0.05
+
+    else:
+        # No slash in the input: compare only against the city/location
+        # portion of the candidate timezone.
+        city = candidate_blocks[-1]
+        score = jaro_winkler(input_blocks[0], city)
+
+    results.append((score, timezone))
+
+
+# Highest score first, then alphabetically for deterministic ties.
+results.sort(key=lambda x: (-x[0], x[1]))
+
+for score, timezone in results[:5]:
+    print(timezone)
+PY
+}
+
 # Fetch estimated timezone
 set +euo pipefail
+
 if [[ -n "$arch" ]]; then
-    auto_tz=$(/mnt/opt/arch_install_sh/get_tz_dhcp -doTzdb -newAddress)
-	tz_msg="The timezone based on DHCPv6 is:"
+    candidate_tz=$(/mnt/opt/arch_install_sh/get_tz_dhcp -doTzdb -newAddress)
+
+    # Only accept DHCPv6 result if systemd recognizes it.
+    if [[ -n "$candidate_tz" ]] && timezone_is_valid "$candidate_tz"; then
+        auto_tz="$candidate_tz"
+        tz_msg="The timezone based on DHCPv6 is:"
+    fi
 fi
+
 if [[ -z "$auto_tz" ]]; then
-    auto_tz=$(curl -fsL https://ipapi.co/timezone/)
-	tz_msg="The estimated timezone based on your IP address is:"
+    candidate_tz=$(curl -fsL https://ipapi.co/timezone/)
+
+    # Only accept IP result if systemd recognizes it.
+    if [[ -n "$candidate_tz" ]] && timezone_is_valid "$candidate_tz"; then
+        auto_tz="$candidate_tz"
+        tz_msg="The estimated timezone based on your IP address is:"
+    fi
 fi
+
 set -euo pipefail
 
+# Ask user to confirm detected timezone
 if [[ -n "$auto_tz" ]]; then
-    # Ask user to confirm detected timezone
     echo "$tz_msg $auto_tz"
     read -e -p "Is this correct? (Y/n): " response
     response=${response:-Y}
@@ -319,10 +488,46 @@ if [[ -n "$auto_tz" ]]; then
     fi
 fi
 
-# If no automatic timezone was found, or user rejected it
-if [[ -z "$final_tz" ]]; then
-    read -e -p "Please enter your timezone (e.g., 'Asia/Tokyo', 'America/Los_Angeles', 'America/New_York'): " final_tz
-fi
+# Manual timezone entry
+while [[ -z "$final_tz" ]]; do
+    read -e -p "Please enter your timezone (e.g., 'Asia/Tokyo', 'America/Los_Angeles', 'America/New_York'): " entered_tz
+
+    if timezone_is_valid "$entered_tz"; then
+        final_tz="$entered_tz"
+        break
+    fi
+
+    # Case-insensitive exact match.
+    if corrected_tz=$(timezone_find_case_insensitive "$entered_tz"); then
+        final_tz="$corrected_tz"
+        break
+    fi
+
+    echo "Invalid timezone: $entered_tz"
+    echo
+
+    mapfile -t suggestions < <(find_similar_timezones "$entered_tz")
+
+    if ((${#suggestions[@]} > 0)); then
+        echo "Possible matches:"
+        for i in "${!suggestions[@]}"; do
+            printf '  %d) %s\n' "$((i + 1))" "${suggestions[i]}"
+        done
+        echo
+
+        read -e -p "Enter a number to use a suggested timezone, or press Enter to retype: " choice
+
+        if [[ "$choice" =~ ^[1-9][0-9]*$ ]] &&
+           (( choice <= ${#suggestions[@]} )); then
+            final_tz="${suggestions[$((choice - 1))]}"
+        fi
+    else
+        echo "No similar timezones found."
+    fi
+done
+
+echo "Using timezone: $final_tz"
+
 
 while true; do
 	echo "Choose system type:"
