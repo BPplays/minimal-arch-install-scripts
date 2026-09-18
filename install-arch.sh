@@ -298,7 +298,7 @@ select_disk() {
 		fi
 	done
 
-	printf '%s\n' "$selected" >&2
+	printf '%s\n' "$selected"
 }
 
 while [[ -z "$BLOCK_DEVICE" ]]; do
@@ -766,7 +766,7 @@ select_partition() {
 		fi
 	done
 
-	printf '%s\n' "$selected" >&2
+	printf '%s\n' "$selected"
 }
 
 if [[ "${PARTITIONING}" == "y" ]]; then
