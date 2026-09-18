@@ -730,13 +730,12 @@ select_partition() {
 		echo >&2
 
 		local table=""
-		local -a selectable_partitions=()
+		local -A selectable_partitions=()
 		local display_index=0
 		local partition
 
 		for partition in "${partitions[@]}"; do
 			local name size fstype label
-
 			name=$(jq -r '.name' <<< "$partition")
 			size=$(jq -r '.size' <<< "$partition")
 			fstype=$(jq -r '.fstype // ""' <<< "$partition")
@@ -746,14 +745,14 @@ select_partition() {
 
 			[[ -b "$path" ]] || continue
 
-
-			# increment first to keep order the same even with excluded
+			# Keep the display index tied to the original partition order.
 			((++display_index))
 
 			# Don't offer partitions that were already selected.
 			[[ -n "${excluded_partitions[$path]+x}" ]] && continue
 
-			selectable_partitions+=("$partition")
+			# Map the displayed number directly to the partition.
+			selectable_partitions["$display_index"]="$partition"
 
 			table+=$(printf '%d)\t%s\t%s GB' \
 				"$display_index" \
@@ -773,10 +772,10 @@ select_partition() {
 		if [[ "$choice" == "0" ]]; then
 			return 1
 		elif [[ "$choice" =~ ^[1-9][0-9]*$ ]] &&
-			(( choice <= ${#selectable_partitions[@]} )); then
+			[[ -n "${selectable_partitions[$choice]+x}" ]]; then
 
 			local name
-			name=$(jq -r '.name' <<< "${selectable_partitions[$((choice - 1))]}")
+			name=$(jq -r '.name' <<< "${selectable_partitions[$choice]}")
 			selected="/dev/$name"
 		fi
 	done
