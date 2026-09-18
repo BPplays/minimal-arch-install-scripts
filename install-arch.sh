@@ -228,14 +228,67 @@ echo ""
 echo ""
 
 # lsblk --bytes | numfmt --field 4 --header --to=si --format="%.2f"
-print_silsblk
+# print_silsblk
+
+BLOCK_DEVICE=""
+
+
+while [[ -z "$BLOCK_DEVICE" ]]; do
+	select_disk() {
+		local json
+		json=$(lsblk --json --bytes -d -e 7 -o NAME,SIZE,MODEL,TYPE,TRAN)
+
+		mapfile -t disks < <(
+			jq -r '
+			.blockdevices[]
+			| select(.type == "disk")
+			| [.name, .size, (.model // ""), (.tran // "")]
+			| @tsv
+			' <<< "$json"
+		)
+
+		echo "Available disks:"
+		echo ""
+
+		local i name size model tran
+
+		for i in "${!disks[@]}"; do
+			IFS=$'\t' read -r name size model tran <<< "${disks[i]}"
+			local path
+			path="$(printf '/dev/%s' "$name")"
+
+			if ! [[ -b "$path" ]]; then
+				continue
+			fi
+
+			printf '  %d) %s  %s GB  %s' \
+			"$((i + 1))" \
+			"$path" \
+			"$(convert_bytes_gb "$size")" \
+			"$model"
+
+			[[ -n "$tran" ]] && printf ' [%s]' "$tran"
+			echo
+		done
+
+		echo
+
+		read -e -p "chose the block device path you want to install Arch on:" choice
+
+		if [[ "$choice" == "0" ]]; then
+			# special case for 0
+			BLOCK_DEVICE=""
+		elif [[ "$choice" =~ ^[1-9][0-9]*$ ]] &&
+			(( choice <= ${#disks[@]} )); then
+			IFS=$'\t' read -r name _ <<< "${disks[$((choice - 1))]}"
+			BLOCK_DEVICE="/dev/$name"
+		fi
+	}
+
+	select_disk
+done
 
 echo ""
-
-
-# read the block device path you want to install Arch on
-echo -n "Enter the block device path you want to install Arch on: "
-read -r BLOCK_DEVICE
 
 # ask if the user wants default partitioning or wants to do partitioning manually with cfdisk?
 echo -n "Do you want to do partitioning manually with cfdisk? [y/N]: "
@@ -249,6 +302,7 @@ echo "RAM size: $ram_gb GB, $ram_gib GiB"
 read -p "would you like to use si decimal prefixes for RAM and swap over base-2 prefixes (GB is si, GiB is base-2. base-2 is more standard for RAM and the default here)? [y/N]: " response
 response=${response:-N}
 
+ram_si=false
 echo ""
 if [[ "$response" =~ ^[Yy]$ ]]; then
 	ram_si=true
@@ -517,7 +571,7 @@ while [[ -z "$final_tz" ]]; do
 		printf '  0) %s\n' "Retype"
         echo
 
-        read -e -p "Enter a number to use a suggested timezone, or press Enter to retype: " choice
+        read -e -p "Enter a number to use a suggested timezone, or press Enter to retype:" choice
 
 		if [[ "$choice" == "0" ]]; then
 			# special case for 0
