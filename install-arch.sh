@@ -232,60 +232,77 @@ echo ""
 
 BLOCK_DEVICE=""
 
+select_disk() {
+	local selected=""
 
-while [[ -z "$BLOCK_DEVICE" ]]; do
-	select_disk() {
+	while [[ -z "$selected" ]]; do
 		local json
 		json=$(lsblk --json --bytes -d -e 7 -o NAME,SIZE,MODEL,TYPE,TRAN)
 
+		local -a disks=()
 		mapfile -t disks < <(
-			jq -r '
-			.blockdevices[]
-			| select(.type == "disk")
-			| [.name, .size, (.model // ""), (.tran // "")]
-			| @tsv
+			jq -c '
+				.blockdevices[]
+				| select(.type == "disk")
 			' <<< "$json"
 		)
 
-		echo "Available disks:"
-		echo ""
+		echo >&2
+		echo "Available disks:" >&2
+		echo >&2
 
-		local i name size model tran
+		local table=""
+		local -a selectable_disks=()
+		local display_index=0
+		local disk
 
-		for i in "${!disks[@]}"; do
-			IFS=$'\t' read -r name size model tran <<< "${disks[i]}"
-			local path
-			path="$(printf '/dev/%s' "$name")"
+		for disk in "${disks[@]}"; do
+			local name size model tran
 
-			if ! [[ -b "$path" ]]; then
-				continue
-			fi
+			name=$(jq -r '.name' <<< "$disk")
+			size=$(jq -r '.size' <<< "$disk")
+			model=$(jq -r '.model // ""' <<< "$disk")
+			tran=$(jq -r '.tran // ""' <<< "$disk")
 
-			printf '  %d) %s  %s GB  %s' \
-			"$((i + 1))" \
-			"$path" \
-			"$(convert_bytes_gb "$size")" \
-			"$model"
+			local path="/dev/$name"
 
-			[[ -n "$tran" ]] && printf ' [%s]' "$tran"
-			echo
+			[[ -b "$path" ]] || continue
+
+			((++display_index))
+			selectable_disks+=("$disk")
+
+			table+=$(printf '%d)\t%s\t%s GB\t%s' \
+				"$display_index" \
+				"$path" \
+				"$(convert_bytes_gb "$size")" \
+				"$model")
+
+			[[ -n "$tran" ]] && table+=$'\t'"[$tran]"
+			table+=$'\n'
 		done
 
-		echo
+		printf '%s' "$table" | column -t -s $'\t' >&2
 
-		read -e -p "chose the block device path you want to install Arch on:" choice
+		echo >&2
+		read -e -p "Choose the block device path you want to install Arch on: " choice
 
 		if [[ "$choice" == "0" ]]; then
-			# special case for 0
-			BLOCK_DEVICE=""
+			return 1
 		elif [[ "$choice" =~ ^[1-9][0-9]*$ ]] &&
-			(( choice <= ${#disks[@]} )); then
-			IFS=$'\t' read -r name _ <<< "${disks[$((choice - 1))]}"
-			BLOCK_DEVICE="/dev/$name"
-		fi
-	}
+			(( choice <= ${#selectable_disks[@]} )); then
 
-	select_disk
+			local name
+			name=$(jq -r '.name' <<< "${selectable_disks[$((choice - 1))]}")
+
+			selected="/dev/$name"
+		fi
+	done
+
+	printf '%s\n' "$selected" >&2
+}
+
+while [[ -z "$BLOCK_DEVICE" ]]; do
+	BLOCK_DEVICE=$(select_disk) || continue
 done
 
 echo "Using $BLOCK_DEVICE as install drive"
@@ -572,7 +589,7 @@ while [[ -z "$final_tz" ]]; do
 		printf '  0) %s\n' "Retype"
         echo
 
-        read -e -p "Enter a number to use a suggested timezone, or press Enter to retype:" choice
+        read -e -p "Enter a number to use a suggested timezone, or press Enter to retype: " choice
 
 		if [[ "$choice" == "0" ]]; then
 			# special case for 0
@@ -689,63 +706,67 @@ select_partition() {
 		local json
 		json=$(lsblk --json --bytes -e 7 -o NAME,SIZE,TYPE,FSTYPE,LABEL,PARTTYPE)
 
+		local -a partitions=()
 		mapfile -t partitions < <(
-			jq -r '
-			.blockdevices[]
-			| .. | objects
-			| select(.type == "part")
-			| [
-				.name,
-				.size,
-				(.fstype // ""),
-				(.label // ""),
-				(.parttype // "")
-			]
-			| @tsv
+			jq -c '
+				.blockdevices[]
+				| .. | objects
+				| select(.type == "part")
 			' <<< "$json"
 		)
 
-		echo
-		echo "Available partitions:"
-		echo
+		echo >&2
+		echo "Available partitions:" >&2
+		echo >&2
 
-		local i name size fstype label parttype
+		local table=""
+		local -a selectable_partitions=()
+		local display_index=0
+		local partition
 
-		for i in "${!partitions[@]}"; do
-			IFS=$'\t' read -r name size fstype label parttype <<< "${partitions[i]}"
+		for partition in "${partitions[@]}"; do
+			local name size fstype label parttype
+			local name size fstype label
+
+			name=$(jq -r '.name' <<< "$partition")
+			size=$(jq -r '.size' <<< "$partition")
+			fstype=$(jq -r '.fstype // ""' <<< "$partition")
+			label=$(jq -r '.label // ""' <<< "$partition")
 
 			local path="/dev/$name"
 
-			if ! [[ -b "$path" ]]; then
-				continue
-			fi
+			[[ -b "$path" ]] || continue
 
-			printf '  %d) %-16s %8s GB' \
-				"$((i + 1))" \
+			((display_index++))
+			selectable_partitions+=("$partition")
+
+			table+=$(printf '%d)\t%s\t%s GB' \
+				"$display_index" \
 				"$path" \
-				"$(convert_bytes_gb "$size")"
+				"$(convert_bytes_gb "$size")")
 
-			[[ -n "$fstype" ]] && printf '  [%s]' "$fstype"
-			[[ -n "$label" ]] && printf '  "%s"' "$label"
-
-			echo
+			[[ -n "$fstype" ]] && table+=$'\t'"[$fstype]"
+			[[ -n "$label" ]] && table+=$'\t'"\"$label\""
+			table+=$'\n'
 		done
 
-		echo
-		read -e -p "$prompt: " choice
+		printf '%s' "$table" | column -t -s $'\t' >&2
+
+		echo >&2
+		read -e -p "$prompt: " choice >&2
 
 		if [[ "$choice" == "0" ]]; then
-			selected=""
 			return 1
 		elif [[ "$choice" =~ ^[1-9][0-9]*$ ]] &&
-			(( choice <= ${#partitions[@]} )); then
+			(( choice <= ${#selectable_partitions[@]} )); then
 
-			IFS=$'\t' read -r name _ <<< "${partitions[$((choice - 1))]}"
+			local name
+			name=$(jq -r '.name' <<< "${selectable_partitions[$((choice - 1))]}")
 			selected="/dev/$name"
 		fi
 	done
 
-	printf '%s\n' "$selected"
+	printf '%s\n' "$selected" >&2
 }
 
 if [[ "${PARTITIONING}" == "y" ]]; then
