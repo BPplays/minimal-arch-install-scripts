@@ -288,6 +288,7 @@ while [[ -z "$BLOCK_DEVICE" ]]; do
 	select_disk
 done
 
+echo "Using $BLOCK_DEVICE as install drive"
 echo ""
 
 # ask if the user wants default partitioning or wants to do partitioning manually with cfdisk?
