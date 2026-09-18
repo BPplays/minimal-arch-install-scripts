@@ -806,12 +806,16 @@ else
 		-n 3:0:+$(awk "BEGIN {print int(${arch_size_KIB})}")kib -t 3:8309 -c 3:"Arch Linux" \
 		"${BLOCK_DEVICE}"
 
-	EFI_PARTITION="${BLOCK_DEVICE}p1"
-	BOOT_PARTITION="${BLOCK_DEVICE}p2"
-	NEW_PARTITION="${BLOCK_DEVICE}p3"
+	# EFI_PARTITION="${BLOCK_DEVICE}p1"
+	# BOOT_PARTITION="${BLOCK_DEVICE}p2"
+	# NEW_PARTITION="${BLOCK_DEVICE}p3"
 
-	mkfs.fat -F32 "$EFI_PARTITION"
-	mkfs.ext4 -m 2 "$BOOT_PARTITION"
+	EFI_PARTITION=$(select_partition "Choose the EFI system partition") || exit 1
+	BOOT_PARTITION=$(select_partition "Choose the boot partition" "$EFI_PARTITION") || exit 1
+	NEW_PARTITION=$(select_partition "Choose the LUKS partition" "$EFI_PARTITION" "$BOOT_PARTITION") || exit 1
+
+	yes | mkfs.fat -F32 "$EFI_PARTITION"
+	yes | mkfs.ext4 -m 2 "$BOOT_PARTITION"
 fi
 
 # show partitions
