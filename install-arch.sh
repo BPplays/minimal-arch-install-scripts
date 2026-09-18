@@ -809,7 +809,8 @@ else
 	BOOT_PARTITION="${BLOCK_DEVICE}p2"
 	NEW_PARTITION="${BLOCK_DEVICE}p3"
 
-
+	echo
+	print_silsblk
 	echo "partitioning:"
 	echo "EFI  (fat32): $EFI_PARTITION"
 	echo "BOOT (ext4):  $BOOT_PARTITION"
