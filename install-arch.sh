@@ -813,8 +813,8 @@ else
 	BOOT_PARTITION=$(select_partition "Choose the boot partition" "$EFI_PARTITION") || exit 1
 	NEW_PARTITION=$(select_partition "Choose the LUKS partition" "$EFI_PARTITION" "$BOOT_PARTITION") || exit 1
 
-	yes | mkfs.fat -F32 "$EFI_PARTITION"
-	yes | mkfs.ext4 -m 2 "$BOOT_PARTITION"
+	mkfs.fat -F32 "$EFI_PARTITION"
+	mkfs.ext4 -m 2 "$BOOT_PARTITION"
 fi
 
 # show partitions
