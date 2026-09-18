@@ -814,7 +814,7 @@ else
 	NEW_PARTITION=$(select_partition "Choose the LUKS partition" "$EFI_PARTITION" "$BOOT_PARTITION") || exit 1
 
 	mkfs.fat -F32 "$EFI_PARTITION"
-	mkfs.ext4 --force -m 2 "$BOOT_PARTITION"
+	mkfs.ext4 -F -m 2 "$BOOT_PARTITION"
 fi
 
 # show partitions
