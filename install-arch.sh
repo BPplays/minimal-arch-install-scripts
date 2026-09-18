@@ -586,7 +586,8 @@ while [[ -z "$final_tz" ]]; do
     fi
 done
 
-echo "Using timezone: $final_tz"
+export TIME_ZONE="$final_tz"
+echo "Using timezone: $TIME_ZONE"
 
 
 while true; do
@@ -630,11 +631,6 @@ while true; do
 			;;
 	esac
 done
-
-# echo -n "Enter Time Zone: "
-# read -r TIME_ZONE_t
-export TIME_ZONE="$final_tz"
-echo "Using $TIME_ZONE as timezone"
 
 echo -n "Enter hostname: "
 read -r HOSTNAME_t
@@ -685,10 +681,88 @@ arch_size_MIB=$(convert_gb_to_mib $arch_size_gb)
 arch_size_KIB=$(convert_gb_to_kib $arch_size_gb)
 arch_size_byte=$(convert_gb_to_byte $arch_size_gb)
 
-# if the user wants to create [one] LUKS partition manually with cfdisk (in case there are already other OS's installed)
-if [ "${PARTITIONING}" == "y" ]; then
-	# partition the block device with cfdisk
+select_partition() {
+	local prompt="$1"
+	local selected=""
+
+	while [[ -z "$selected" ]]; do
+		local json
+		json=$(lsblk --json --bytes -e 7 -o NAME,SIZE,TYPE,FSTYPE,LABEL,PARTTYPE)
+
+		mapfile -t partitions < <(
+			jq -r '
+			.blockdevices[]
+			| .. | objects
+			| select(.type == "part")
+			| [
+				.name,
+				.size,
+				(.fstype // ""),
+				(.label // ""),
+				(.parttype // "")
+			]
+			| @tsv
+			' <<< "$json"
+		)
+
+		echo
+		echo "Available partitions:"
+		echo
+
+		local i name size fstype label parttype
+
+		for i in "${!partitions[@]}"; do
+			IFS=$'\t' read -r name size fstype label parttype <<< "${partitions[i]}"
+
+			local path="/dev/$name"
+
+			if ! [[ -b "$path" ]]; then
+				continue
+			fi
+
+			printf '  %d) %-16s %8s GB' \
+				"$((i + 1))" \
+				"$path" \
+				"$(convert_bytes_gb "$size")"
+
+			[[ -n "$fstype" ]] && printf '  [%s]' "$fstype"
+			[[ -n "$label" ]] && printf '  "%s"' "$label"
+
+			echo
+		done
+
+		echo
+		read -e -p "$prompt: " choice
+
+		if [[ "$choice" == "0" ]]; then
+			selected=""
+			return 1
+		elif [[ "$choice" =~ ^[1-9][0-9]*$ ]] &&
+			(( choice <= ${#partitions[@]} )); then
+
+			IFS=$'\t' read -r name _ <<< "${partitions[$((choice - 1))]}"
+			selected="/dev/$name"
+		fi
+	done
+
+	printf '%s\n' "$selected"
+}
+
+if [[ "${PARTITIONING}" == "y" ]]; then
+	echo
+	echo "You should make at least 3 partitions: EFI, BOOT, and a main LUKS partition"
+	echo
+	read -r -p "Press Enter to continue..."
+
 	cfdisk "${BLOCK_DEVICE}"
+
+	echo
+	echo "Select the partitions to use for the Arch installation."
+	echo
+
+	EFI_PARTITION=$(select_partition "Choose the EFI system partition") || exit 1
+	BOOT_PARTITION=$(select_partition "Choose the boot partition") || exit 1
+	NEW_PARTITION=$(select_partition "Choose the LUKS partition") || exit 1
 else
 	sgdisk --clear \
 		-n 1:2048:+$(awk "BEGIN {print int($(convert_gb_to_kib 1.5))}")kib -t 1:EF00 -c 1:"Arch Linux-EFI System" \
@@ -696,25 +770,21 @@ else
 		-n 3:0:+$(awk "BEGIN {print int(${arch_size_KIB})}")kib -t 3:8309 -c 3:"Arch Linux" \
 		"${BLOCK_DEVICE}"
 
-	# format EFI partition
-	mkfs.fat -F32 "${BLOCK_DEVICE}p1"
-	mkfs.ext4 -m 2 "${BLOCK_DEVICE}p2"
+	# EFI_PARTITION="${BLOCK_DEVICE}p1"
+	# BOOT_PARTITION="${BLOCK_DEVICE}p2"
+	# NEW_PARTITION="${BLOCK_DEVICE}p3"
+
+	EFI_PARTITION=$(select_partition "Choose the EFI system partition") || exit 1
+	BOOT_PARTITION=$(select_partition "Choose the boot partition") || exit 1
+	NEW_PARTITION=$(select_partition "Choose the LUKS partition") || exit 1
+
+	mkfs.fat -F32 "$EFI_PARTITION"
+	mkfs.ext4 -m 2 "$BOOT_PARTITION"
 fi
 
 # show partitions
 # lsblk --bytes | numfmt --field 4 --header --to=si --format="%.2f"
 print_silsblk
-
-# read the boot/efi partition path
-echo -n "Enter the efi partition path: "
-read -r EFI_PARTITION
-
-echo -n "Enter the boot partition path: "
-read -r BOOT_PARTITION
-
-# read the LUKS partition path
-echo -n "Enter the LUKS partition path: "
-read -r NEW_PARTITION
 
 # create a LUKS partiton
 # Turn off 'set -euo pipefail'
