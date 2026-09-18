@@ -700,7 +700,17 @@ arch_size_byte=$(convert_gb_to_byte $arch_size_gb)
 
 select_partition() {
 	local prompt="$1"
+	shift
+
 	local selected=""
+
+	# Partition paths that should not be offered again.
+	local -A excluded_partitions=()
+	local partition_to_exclude
+
+	for partition_to_exclude in "$@"; do
+		excluded_partitions["$partition_to_exclude"]=1
+	done
 
 	while [[ -z "$selected" ]]; do
 		local json
@@ -735,6 +745,9 @@ select_partition() {
 			local path="/dev/$name"
 
 			[[ -b "$path" ]] || continue
+
+			# Don't offer partitions that were already selected.
+			[[ -n "${excluded_partitions[$path]+x}" ]] && continue
 
 			((++display_index))
 			selectable_partitions+=("$partition")
@@ -781,8 +794,8 @@ if [[ "${PARTITIONING}" == "y" ]]; then
 	echo
 
 	EFI_PARTITION=$(select_partition "Choose the EFI system partition") || exit 1
-	BOOT_PARTITION=$(select_partition "Choose the boot partition") || exit 1
-	NEW_PARTITION=$(select_partition "Choose the LUKS partition") || exit 1
+	BOOT_PARTITION=$(select_partition "Choose the boot partition" "$EFI_PARTITION") || exit 1
+	NEW_PARTITION=$(select_partition "Choose the LUKS partition" "$EFI_PARTITION" "$BOOT_PARTITION") || exit 1
 else
 	sgdisk --clear \
 		-n 1:2048:+$(awk "BEGIN {print int($(convert_gb_to_kib 1.5))}")kib -t 1:EF00 -c 1:"Arch Linux-EFI System" \
@@ -795,8 +808,8 @@ else
 	# NEW_PARTITION="${BLOCK_DEVICE}p3"
 
 	EFI_PARTITION=$(select_partition "Choose the EFI system partition") || exit 1
-	BOOT_PARTITION=$(select_partition "Choose the boot partition") || exit 1
-	NEW_PARTITION=$(select_partition "Choose the LUKS partition") || exit 1
+	BOOT_PARTITION=$(select_partition "Choose the boot partition" "$EFI_PARTITION") || exit 1
+	NEW_PARTITION=$(select_partition "Choose the LUKS partition" "$EFI_PARTITION" "$BOOT_PARTITION") || exit 1
 
 	mkfs.fat -F32 "$EFI_PARTITION"
 	mkfs.ext4 -m 2 "$BOOT_PARTITION"
