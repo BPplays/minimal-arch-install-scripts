@@ -725,7 +725,6 @@ select_partition() {
 		local partition
 
 		for partition in "${partitions[@]}"; do
-			local name size fstype label parttype
 			local name size fstype label
 
 			name=$(jq -r '.name' <<< "$partition")
@@ -737,7 +736,7 @@ select_partition() {
 
 			[[ -b "$path" ]] || continue
 
-			((display_index++))
+			((++display_index))
 			selectable_partitions+=("$partition")
 
 			table+=$(printf '%d)\t%s\t%s GB' \
@@ -753,7 +752,7 @@ select_partition() {
 		printf '%s' "$table" | column -t -s $'\t' >&2
 
 		echo >&2
-		read -e -p "$prompt: " choice >&2
+		read -e -p "$prompt: " choice
 
 		if [[ "$choice" == "0" ]]; then
 			return 1
